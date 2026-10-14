@@ -2,7 +2,7 @@
 
 Portafolio interactivo hecho con **three.js** y **Vite**. Todo el sitio es una escena 3D: un cristal con defectos escondidos, una galería de proyectos que se recorre con el scroll y una constelación de habilidades.
 
-**Demo:** https://j1h23jp.github.io/portafolio-3d/
+**Demo:** https://j1h23jp.github.io/johnguaman/
 
 ## El concepto
 
