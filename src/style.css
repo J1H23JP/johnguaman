@@ -228,7 +228,10 @@ main {
   will-change: opacity;
 }
 .stage a,
-.stage button {
+.stage button,
+.stage input,
+.stage textarea,
+.stage label {
   pointer-events: auto;
 }
 
@@ -521,8 +524,87 @@ h2 {
   gap: 1.8rem;
   max-width: 44rem;
 }
+.contact {
+  max-width: 38rem;
+  gap: 1.1rem;
+}
 .contact h2 {
-  font-size: clamp(2.2rem, 6vw, 5.2rem);
+  font-size: clamp(2rem, 4.4vw, 3.8rem);
+}
+
+.form {
+  display: grid;
+  gap: 0.9rem;
+}
+.form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+.field {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.92rem;
+  color: var(--mute);
+}
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  background: rgba(7, 11, 31, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--bone);
+  font: inherit;
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 2.9rem;
+  transition: border-color 0.25s, background 0.25s;
+}
+.field textarea {
+  min-height: 6.5rem;
+  max-height: 14rem;
+}
+.field input:hover,
+.field textarea:hover {
+  border-color: rgba(232, 236, 255, 0.4);
+}
+.field input:focus-visible,
+.field textarea:focus-visible {
+  outline: none;
+  border-color: var(--probe);
+  background: rgba(14, 21, 54, 0.8);
+  box-shadow: 0 0 0 3px rgba(77, 243, 224, 0.2);
+}
+.form__trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.form__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+}
+.form__status {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--mute);
+}
+.form__status[data-kind='ok'] {
+  color: var(--probe);
+}
+.form__status[data-kind='error'] {
+  color: var(--defect);
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
 }
 .links {
   display: flex;
@@ -684,6 +766,28 @@ h2 {
   .contact {
     align-self: flex-start;
     padding-top: 1rem;
+  }
+  .form__row {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+  .contact {
+    gap: 0.7rem;
+    padding: 0.9rem 1rem 1rem;
+    background: rgba(7, 11, 31, 0.74);
+    border: 1px solid var(--line);
+    border-radius: 1.25rem;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .contact h2 {
+    font-size: 1.7rem;
+  }
+  .contact .copy {
+    font-size: 0.95rem;
+  }
+  .field textarea {
+    min-height: 4.6rem;
   }
 }
 

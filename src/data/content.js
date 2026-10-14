@@ -8,7 +8,9 @@ export const profile = {
   intro:
     'Desarrollo software y lo pruebo con el mismo cuidado. Me interesan las pruebas, la automatización y las aplicaciones con IA que se pueden confiar en producción.',
   github: 'https://github.com/J1H23JP',
-  // Completa estos campos para que aparezcan en la sección de contacto.
+  // Correo que recibe los mensajes del formulario de contacto (servicio FormSubmit).
+  formTo: 'johnguaman2003@gmail.com',
+  // Opcionales: si los completas, aparecen como botones junto al formulario.
   email: '',
   linkedin: '',
 };

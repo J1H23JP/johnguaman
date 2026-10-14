@@ -46,8 +46,8 @@ export function buildUI() {
 
   const contactLinks = [
     profile.email &&
-      `<button class="btn btn--solid" type="button" id="copy-mail" data-mail="${esc(profile.email)}">Copiar correo</button>`,
-    `<a class="btn ${profile.email ? '' : 'btn--solid'}" href="${esc(profile.github)}" target="_blank" rel="noopener">GitHub</a>`,
+      `<button class="btn" type="button" id="copy-mail" data-mail="${esc(profile.email)}">Copiar correo</button>`,
+    `<a class="btn" href="${esc(profile.github)}" target="_blank" rel="noopener">GitHub</a>`,
     profile.linkedin &&
       `<a class="btn" href="${esc(profile.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>`,
   ]
@@ -108,7 +108,28 @@ export function buildUI() {
       <div class="stage">
         <div class="contact">
           <h2>Si algo no funciona, hablemos</h2>
-          <p class="copy">Cuéntame qué estás construyendo y qué debería funcionar sin fallos.</p>
+          <p class="copy">Cuéntame qué estás construyendo. Te respondo por correo.</p>
+          <form class="form" id="contact-form" novalidate>
+            <div class="form__row">
+              <label class="field">
+                <span>Nombre</span>
+                <input name="name" type="text" autocomplete="name" required maxlength="80" />
+              </label>
+              <label class="field">
+                <span>Correo</span>
+                <input name="email" type="email" autocomplete="email" required maxlength="120" />
+              </label>
+            </div>
+            <label class="field">
+              <span>Mensaje</span>
+              <textarea name="message" rows="4" required minlength="10" maxlength="2000"></textarea>
+            </label>
+            <input class="form__trap" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            <div class="form__actions">
+              <button class="btn btn--solid" type="submit" id="form-submit">Enviar mensaje</button>
+              <p class="form__status" id="form-status" role="status" aria-live="polite"></p>
+            </div>
+          </form>
           <div class="links">${contactLinks}</div>
         </div>
         <p class="foot">${esc(profile.name)}, ${new Date().getFullYear()}. Hecho con three.js y Vite.</p>
@@ -185,6 +206,63 @@ export function toast(message) {
   el.classList.add('is-on');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('is-on'), 2200);
+}
+
+// Formulario de contacto sin backend: FormSubmit reenvia el mensaje al correo configurado.
+export function setupContactForm() {
+  const form = $('#contact-form');
+  if (!form || !profile.formTo) return;
+  const button = $('#form-submit');
+  const status = $('#form-status');
+  const endpoint = `https://formsubmit.co/ajax/${profile.formTo}`;
+
+  const say = (text, kind = '') => {
+    status.textContent = text;
+    status.dataset.kind = kind;
+  };
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+
+    // Campo trampa: los bots lo llenan, las personas no lo ven.
+    if (data.get('_honey')) return;
+
+    const name = String(data.get('name') || '').trim();
+    const email = String(data.get('email') || '').trim();
+    const message = String(data.get('message') || '').trim();
+
+    if (!name) return say('Escribe tu nombre.', 'error');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return say('Revisa tu correo: parece incompleto.', 'error');
+    if (message.length < 10) return say('El mensaje es muy corto. Cuéntame un poco más.', 'error');
+
+    button.disabled = true;
+    say('Enviando...');
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          name,
+          email,
+          message,
+          _subject: `Nuevo mensaje de ${name} desde Portafolio-John-Guaman`,
+          _template: 'table',
+          _captcha: 'false',
+        }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || String(json.success) === 'false') throw new Error(json.message || 'Error de envío');
+      form.reset();
+      say('Mensaje enviado. Gracias, te respondo pronto.', 'ok');
+      toast('Mensaje enviado');
+    } catch (err) {
+      console.warn('Formulario de contacto:', err);
+      say('No se pudo enviar. Inténtalo de nuevo en un momento o escríbeme por GitHub.', 'error');
+    } finally {
+      button.disabled = false;
+    }
+  });
 }
 
 export function toggleHud(id, on) {

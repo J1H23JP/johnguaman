@@ -67,11 +67,11 @@ function makeStates(projectCount) {
     // 4. Contacto: el nudo final, ya sin defectos.
     (u, o, ctx) => {
       const a = lerp(0.65, -0.1, u);
-      const r = ctx.portrait ? 14 : 11;
+      const r = ctx.portrait ? 19 : 11;
       o.pos.set(Math.sin(a) * r, 0.6, Math.cos(a) * r).add(CONTACT_CENTER);
       const right = new THREE.Vector3(Math.cos(a), 0, -Math.sin(a));
       o.target.copy(CONTACT_CENTER);
-      if (ctx.portrait) o.target.y -= 2.8;
+      if (ctx.portrait) o.target.y -= 4.4;
       else o.target.addScaledVector(right, -3.6);
       o.fov = 45;
     },

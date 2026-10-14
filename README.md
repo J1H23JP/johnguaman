@@ -11,7 +11,7 @@ El portafolio es un laboratorio de pruebas, porque ese es el trabajo: encontrar 
 - **Inicio y Sobre mí.** Un cristal procedural (shader propio) con cinco defectos magenta repartidos por su superficie. Se gira arrastrando y cada defecto se corrige con un clic. Al corregir los cinco, el sistema muestra "Build verde" y lanza una onda expansiva.
 - **Proyectos.** Láminas 3D en arco. La cámara se detiene en cada una mientras haces scroll. Se puede pasar el cursor, hacer clic, usar los botones o las flechas del teclado.
 - **Habilidades.** Constelación de nodos con etiquetas. Cada color es un grupo: desarrollo, calidad e inteligencia artificial.
-- **Contacto.** Un nudo con el mismo material del cristal, ya sin defectos.
+- **Contacto.** Un nudo con el mismo material del cristal, ya sin defectos, y un formulario que envía el mensaje al correo del autor.
 
 ## Tecnología
 
@@ -39,12 +39,21 @@ npm run preview   # sirve dist/ para probar el build
 
 Todo el texto, los proyectos y las habilidades están en un solo archivo: [`src/data/content.js`](src/data/content.js).
 
-- `profile`: nombre, titular, enlaces. Completa `email` y `linkedin` para que aparezcan en la sección de contacto.
+- `profile`: nombre, titular y enlaces. `formTo` es el correo que recibe el formulario de contacto. `email` y `linkedin` son opcionales y agregan botones junto al formulario.
 - `about`: título, párrafos y datos de la sección "Sobre mí".
 - `projects`: cada proyecto se convierte en una lámina 3D. Cambia el título, la descripción, las etiquetas, el enlace y el tono (`hue`, de 0 a 1).
 - `skills`: cada habilidad es un nodo. El campo `group` (`code`, `qa` o `ai`) decide su color.
 
 Si agregas o quitas proyectos, la galería y el recorrido de la cámara se ajustan solos.
+
+## Formulario de contacto
+
+El formulario no necesita backend: usa [FormSubmit](https://formsubmit.co), un servicio gratuito que reenvía cada mensaje al correo definido en `profile.formTo` (`src/data/content.js`).
+
+- **Activación (una sola vez):** el primer mensaje que se envíe dispara un correo de activación a esa dirección. Hay que abrirlo y confirmar; los mensajes siguientes llegan directo. Hasta confirmar, los envíos fallan.
+- **Anti-spam:** incluye un campo trampa oculto para bots. Además, FormSubmit ofrece un alias en lugar del correo real; está en el correo de activación.
+- **Privacidad:** el correo de destino queda visible en el código del sitio. Si eso importa, usa el alias que entrega FormSubmit en `formTo` (`https://formsubmit.co/ajax/<alias>`).
+- **Cambiar de servicio:** la lógica está en `setupContactForm()` de `src/ui.js`; basta con cambiar el endpoint y el formato del cuerpo.
 
 ## Estructura
 

@@ -7,7 +7,7 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 import { projects, skills } from './data/content.js';
-import { buildUI, buildDefectsHud, setProject, setSkill, toast, toggleHud } from './ui.js';
+import { buildUI, buildDefectsHud, setProject, setSkill, setupContactForm, toast, toggleHud } from './ui.js';
 import { COLORS, createCrystal } from './scene/crystal.js';
 import { createStars } from './scene/stars.js';
 import { createBackdrop } from './scene/backdrop.js';
@@ -20,6 +20,7 @@ const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isTouch = window.matchMedia('(pointer: coarse)').matches;
 
 buildUI();
+setupContactForm();
 setProject(0);
 
 const canvas = document.getElementById('gl');
@@ -149,7 +150,7 @@ const crystalRot = { x: 0.15, y: 0.4 };
 
 // ---------------------------------------------------------------- Interaccion
 
-const interactive = (el) => el.closest('a, button, input, .hud');
+const interactive = (el) => el.closest('a, button, input, textarea, label, form, .hud');
 
 window.addEventListener('pointermove', (e) => {
   pointer.cx = e.clientX;
