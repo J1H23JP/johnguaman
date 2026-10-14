@@ -1,4 +1,4 @@
-# Portafolio 3D
+# Portafolio-John-Guaman
 
 Portafolio interactivo hecho con **three.js** y **Vite**. Todo el sitio es una escena 3D: un cristal con defectos escondidos, una galería de proyectos que se recorre con el scroll y una constelación de habilidades.
 
