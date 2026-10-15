@@ -10,7 +10,7 @@ El portafolio de John Guaman, graduado en Ingeniería en Tecnologías de la Info
 
 - **Inicio y Sobre mí.** Un cristal procedural (shader propio) con cinco defectos magenta repartidos por su superficie. Se gira arrastrando y cada defecto se corrige con un clic. Al corregir los cinco, el sistema muestra "Build verde" y lanza una onda expansiva.
 - **Proyectos.** Láminas 3D en arco. La cámara se detiene en cada una mientras haces scroll. Se puede pasar el cursor, hacer clic, usar los botones o las flechas del teclado.
-- **Habilidades.** Constelación de nodos con etiquetas. Cada color es un grupo: lenguajes y herramientas, nube e integración, e inteligencia artificial.
+- **Habilidades.** Constelación de nodos con etiquetas. Cada color es un grupo: lenguajes y herramientas, nube e integración, e inteligencia artificial. Cada habilidad tiene de 1 a 3 años de experiencia: el tamaño del nodo y la cantidad de anillos con satélite que lo orbitan lo reflejan. Al pasar el cursor (o tocar), se resaltan sus conexiones, el resto se atenúa y aparece una tarjeta con los años, el resumen y dónde la usé.
 - **Trayectoria.** Línea de tiempo con la experiencia y la formación. El scroll avanza paso a paso (también se puede hacer clic en cada paso) mientras la cámara se acerca a Ecuador en el globo.
 - **Contacto.** Un globo terráqueo de puntos con paquetes de datos que viajan desde distintas ciudades hasta Quito. Incluye un formulario que envía el mensaje al correo del autor (al enviarlo, un paquete cruza la pantalla hasta Quito) y un apartado para descargar el CV en PDF.
 
@@ -44,7 +44,7 @@ Todo el texto, los proyectos y las habilidades están en un solo archivo: [`src/
 - `about`: título, párrafos y datos de la sección "Sobre mí".
 - `journey`: pasos de la trayectoria (experiencia y formación). Cada paso lleva organización, enfoque, periodo, puntos (con enlaces opcionales) y etiquetas opcionales.
 - `projects`: cada proyecto se convierte en una lámina 3D. Cambia el título, la descripción, las etiquetas, el enlace y el tono (`hue`, de 0 a 1).
-- `skills`: cada habilidad es un nodo. El campo `group` (`code`, `cloud` o `ai`) decide su color.
+- `skills`: cada habilidad es un nodo. `group` (`code`, `cloud` o `ai`) decide su color; `years` (1 a 3) el tamaño y los anillos; `since` el año de inicio aproximado; `summary` la frase principal y `used` la lista de dónde la apliqué. Los años son una estimación: ajústalos a tu experiencia real.
 
 Si agregas o quitas proyectos, la galería y el recorrido de la cámara se ajustan solos.
 
@@ -73,7 +73,7 @@ src/
   scene/
     crystal.js         Cristal con shader, defectos, esquirlas y onda
     gallery.js         Láminas de proyectos y suelo circular
-    constellation.js   Nodos de habilidades
+    constellation.js   Nodos de habilidades con anillos por año de experiencia
     globe.js           Globo de red: continentes de puntos, arcos y paquetes hacia Quito
     stars.js           Campo de partículas con repulsión del cursor
     backdrop.js        Fondo con nebulosa procedural

@@ -120,22 +120,99 @@ export const projects = [
 ];
 
 // Cada habilidad es un nodo en la constelación. "group" decide el color: code, cloud o ai.
+// Habilidades: `years` (1 a 3) define el tamaño del nodo y los satélites que lo orbitan.
+// `since` es el inicio aproximado, `summary` la frase principal y `used` dónde lo apliqué.
 export const skills = [
-  { name: 'Python', group: 'code', note: 'Lenguaje de programación.' },
-  { name: 'SQL', group: 'code', note: 'Lenguaje de consulta de datos.' },
-  { name: 'JavaScript', group: 'code', note: 'Lenguaje de programación para web.' },
-  { name: 'Git y GitHub', group: 'code', note: 'Control de versiones. También uso GitHub Copilot.' },
-  { name: 'Azure', group: 'cloud', note: 'AI Foundry, AI Search, Logic Apps y Functions.' },
-  { name: 'Databricks', group: 'cloud', note: 'Certificación Databricks Fundamentals.' },
-  { name: 'ServiceNow', group: 'cloud', note: 'Integrado con agentes de IA para la gestión de incidentes.' },
-  { name: 'APIs REST', group: 'cloud', note: 'Integración entre servicios y herramientas.' },
-  { name: 'Azure OpenAI', group: 'ai', note: 'Modelos GPT-4o en soluciones RAG y agentes.' },
-  { name: 'RAG', group: 'ai', note: 'Soluciones sobre Azure AI Search y OpenAI, integradas con ServiceNow y Teams.' },
-  { name: 'Agentes', group: 'ai', note: 'Con uso de herramientas y guardrails para automatizar incidentes en banca.' },
-  { name: 'MCP', group: 'ai', note: 'Agentes con arquitectura MCP para automatizar flujos de datos y reportes.' },
-  { name: 'LangChain', group: 'ai', note: 'Framework para aplicaciones con modelos de lenguaje.' },
-  { name: 'LangGraph', group: 'ai', note: 'Framework para flujos de agentes.' },
-  { name: 'Semantic Kernel', group: 'ai', note: 'SDK de Microsoft para orquestar modelos de lenguaje.' },
+  {
+    name: 'Python', group: 'code', years: 3, since: '2023',
+    note: 'Lenguaje de programación.',
+    summary: 'Mi lenguaje base desde la carrera, hoy para agentes de IA y automatización.',
+    used: ['Estudios de Ingeniería en TI en la UNACH', 'Agentes y flujos de datos en Tata Consultancy Services'],
+  },
+  {
+    name: 'SQL', group: 'code', years: 3, since: '2023',
+    note: 'Lenguaje de consulta de datos.',
+    summary: 'Consulta y análisis de datos, desde la formación académica hasta el trabajo con datos.',
+    used: ['Formación en bases de datos en la UNACH', 'Procesamiento de datos de auditoría interna'],
+  },
+  {
+    name: 'JavaScript', group: 'code', years: 2, since: '2024',
+    note: 'Lenguaje de programación para web.',
+    summary: 'Desarrollo web de interfaces, incluido este portafolio en three.js.',
+    used: ['Sitio web del GAD Municipal de Puela', 'Este portafolio 3D'],
+  },
+  {
+    name: 'Git y GitHub', group: 'code', years: 3, since: '2023',
+    note: 'Control de versiones. También uso GitHub Copilot.',
+    summary: 'Control de versiones y publicación de proyectos, con apoyo de GitHub Copilot.',
+    used: ['Repositorios de proyectos personales', 'Despliegue de este sitio con GitHub Actions'],
+  },
+  {
+    name: 'Azure', group: 'cloud', years: 1, since: '2025',
+    note: 'AI Foundry, AI Search, Logic Apps y Functions.',
+    summary: 'Plataforma donde construyo las soluciones de IA del sector bancario.',
+    used: ['Azure AI Search y Azure AI Foundry', 'Logic Apps y Functions para integraciones'],
+  },
+  {
+    name: 'Databricks', group: 'cloud', years: 1, since: '2025',
+    note: 'Certificación Databricks Fundamentals.',
+    summary: 'Fundamentos de la plataforma de datos, con certificación obtenida.',
+    used: ['Certificación Databricks Fundamentals'],
+  },
+  {
+    name: 'ServiceNow', group: 'cloud', years: 1, since: '2026',
+    note: 'Integrado con agentes de IA para la gestión de incidentes.',
+    summary: 'Gestión de incidentes conectada a agentes de IA.',
+    used: ['Agentes que clasifican, escalan y recomiendan resolución', 'Integración con Microsoft Teams'],
+  },
+  {
+    name: 'APIs REST', group: 'cloud', years: 2, since: '2024',
+    note: 'Integración entre servicios y herramientas.',
+    summary: 'Conexión entre servicios, herramientas y agentes.',
+    used: ['Integraciones entre ServiceNow, Teams y Azure', 'Automatización de procesos en la UNACH'],
+  },
+  {
+    name: 'Azure OpenAI', group: 'ai', years: 1, since: '2025',
+    note: 'Modelos GPT-4o en soluciones RAG y agentes.',
+    summary: 'Modelos GPT-4o como motor de las soluciones RAG y de los agentes.',
+    used: ['Soluciones RAG con Azure AI Search', 'Agentes de gestión de incidentes'],
+  },
+  {
+    name: 'RAG', group: 'ai', years: 1, since: '2025',
+    note: 'Soluciones sobre Azure AI Search y OpenAI, integradas con ServiceNow y Teams.',
+    summary: 'Respuestas ancladas a una base de conocimiento, con evaluación frente a CAG y GraphRAG.',
+    used: ['Soluciones sobre Azure AI Search y OpenAI', 'Integración con ServiceNow y Microsoft Teams'],
+  },
+  {
+    name: 'Agentes', group: 'ai', years: 1, since: '2026',
+    note: 'Con uso de herramientas y guardrails para automatizar incidentes en banca.',
+    summary: 'Agentes con herramientas, guardrails y revisión humana para el sector bancario.',
+    used: ['Automatización de incidentes en banca', 'Demos ante equipos ejecutivos de TCS Ecuador'],
+  },
+  {
+    name: 'MCP', group: 'ai', years: 1, since: '2026',
+    note: 'Agentes con arquitectura MCP para automatizar flujos de datos y reportes.',
+    summary: 'Arquitectura MCP para conectar agentes con datos y generar reportes.',
+    used: ['Agentes MCP para flujos de datos y reportes'],
+  },
+  {
+    name: 'LangChain', group: 'ai', years: 1, since: '2025',
+    note: 'Framework para aplicaciones con modelos de lenguaje.',
+    summary: 'Framework para construir aplicaciones con modelos de lenguaje.',
+    used: ['Prototipos de agentes y cadenas de herramientas'],
+  },
+  {
+    name: 'LangGraph', group: 'ai', years: 1, since: '2026',
+    note: 'Framework para flujos de agentes.',
+    summary: 'Flujos de agentes con estado y control explícito.',
+    used: ['Prototipos de flujos de agentes'],
+  },
+  {
+    name: 'Semantic Kernel', group: 'ai', years: 1, since: '2026',
+    note: 'SDK de Microsoft para orquestar modelos de lenguaje.',
+    summary: 'SDK de Microsoft para orquestar modelos de lenguaje.',
+    used: ['Evaluación de orquestación para agentes en Azure'],
+  },
 ];
 
 export const sections = [

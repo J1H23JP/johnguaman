@@ -198,7 +198,7 @@ export function buildUI() {
       </div>
     </div>`;
 
-  $('#hud-skill').innerHTML = `<strong>Elige un nodo</strong><span>Pasa el cursor o toca una habilidad de la constelación.</span>`;
+  $('#hud-skill').innerHTML = SKILL_HINT;
 
   buildDefectsHud(0, 0);
 }
@@ -236,15 +236,34 @@ export function setProject(i) {
   $('#hp-next').disabled = i === projects.length - 1;
 }
 
+const SKILL_HINT = `<strong>Elige un nodo</strong><span>Pasa el cursor o toca una habilidad. Cada anillo que la orbita es un año de experiencia (de 1 a 3).</span>`;
+
 export function setSkill(skill) {
   const hud = $('#hud-skill');
+  hud.classList.toggle('is-detail', !!skill);
   if (!skill) {
     hud.style.setProperty('--skill-color', '#4df3e0');
-    hud.innerHTML = `<strong>Elige un nodo</strong><span>Pasa el cursor o toca una habilidad de la constelación.</span>`;
+    hud.innerHTML = SKILL_HINT;
     return;
   }
+  const years = Math.min(3, Math.max(1, skill.years || 1));
   hud.style.setProperty('--skill-color', GROUP_COLORS[skill.group]);
-  hud.innerHTML = `<strong>${esc(skill.name)}</strong><span>${esc(skill.note)}</span>`;
+  hud.innerHTML = `
+    <div class="sk__head">
+      <strong>${esc(skill.name)}</strong>
+      <span class="sk__group">${esc(GROUP_LABELS[skill.group] || '')}</span>
+    </div>
+    <div class="sk__years" role="img" aria-label="${years} ${years === 1 ? 'año' : 'años'} de experiencia">
+      <div class="sk__bars">${[1, 2, 3].map((n) => `<i class="${n <= years ? 'is-on' : ''}"></i>`).join('')}</div>
+      <b>${years} ${years === 1 ? 'año' : 'años'}</b>
+      ${skill.since ? `<em>desde ${esc(skill.since)}</em>` : ''}
+    </div>
+    <p class="sk__summary">${esc(skill.summary || skill.note)}</p>
+    ${
+      skill.used && skill.used.length
+        ? `<ul class="sk__used">${skill.used.map((u) => `<li>${esc(u)}</li>`).join('')}</ul>`
+        : ''
+    }`;
 }
 
 let toastTimer;

@@ -512,6 +512,86 @@ h2 {
   color: #c6ccee;
   font-size: 0.97rem;
 }
+.hud--skill .sk__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+.hud--skill .sk__group {
+  color: var(--skill-color);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.sk__years {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0.2rem 0 0.7rem;
+}
+.sk__bars {
+  display: flex;
+  gap: 0.25rem;
+}
+.sk__bars i {
+  width: 1.7rem;
+  height: 0.42rem;
+  border-radius: 0.3rem;
+  background: rgba(232, 236, 255, 0.14);
+}
+.sk__bars i.is-on {
+  background: var(--skill-color);
+  box-shadow: 0 0 10px var(--skill-color);
+  transform-origin: left;
+  animation: sk-grow 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.sk__bars i:nth-child(2) { animation-delay: 0.08s; }
+.sk__bars i:nth-child(3) { animation-delay: 0.16s; }
+@keyframes sk-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.sk__years b {
+  font-family: var(--display);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.hud--skill .sk__years em {
+  color: var(--mute);
+  font-style: normal;
+  font-size: 0.82rem;
+}
+.hud--skill .sk__summary {
+  margin: 0 0 0.6rem;
+  color: #dfe3ff;
+}
+.sk__used {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.3rem;
+}
+.sk__used li {
+  position: relative;
+  padding-left: 1rem;
+  color: #c6ccee;
+  font-size: 0.88rem;
+}
+.sk__used li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--skill-color);
+}
+@media (prefers-reduced-motion: reduce) {
+  .sk__bars i.is-on { animation: none; }
+}
 .legend {
   display: flex;
   flex-wrap: wrap;
