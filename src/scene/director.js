@@ -64,7 +64,15 @@ function makeStates(projectCount) {
       else o.target.addScaledVector(right, -3.4);
       o.fov = 48;
     },
-    // 4. Trayectoria: acercamiento a Ecuador en el globo.
+    // 4. Certificaciones: el globo se ve a lo lejos, entre estrellas.
+    (u, o, ctx) => {
+      const a = lerp(0.35, -0.1, u);
+      const r = ctx.portrait ? 40 : 32;
+      o.pos.set(Math.sin(a) * r, 1.5, Math.cos(a) * r).add(CONTACT_CENTER);
+      o.target.copy(CONTACT_CENTER);
+      o.fov = 45;
+    },
+    // 5. Trayectoria: acercamiento a Ecuador en el globo.
     (u, o, ctx) => {
       const a = lerp(0.18, -0.12, u);
       const r = ctx.portrait ? 17 : 9.5;
@@ -75,7 +83,7 @@ function makeStates(projectCount) {
       else o.target.addScaledVector(right, -3.6);
       o.fov = 45;
     },
-    // 5. Contacto: el globo completo, con paquetes llegando a Quito.
+    // 6. Contacto: el globo completo, con paquetes llegando a Quito.
     (u, o, ctx) => {
       const a = lerp(-0.12, 0.1, u);
       const r = ctx.portrait ? 21 : 12.5;

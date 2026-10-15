@@ -215,11 +215,25 @@ export const skills = [
   },
 ];
 
+// Certificaciones (del CV). `image` es la foto del certificado: coloca el archivo en
+// public/certs/ con ese nombre. Si no existe, se muestra una insignia generada.
+export const certifications = [
+  { id: 'az-900', code: 'AZ-900', issuer: 'Microsoft', title: 'Azure Fundamentals', kind: 'cloud', image: './certs/az-900.jpg' },
+  { id: 'ia-901', code: 'IA-901', issuer: 'Microsoft', title: 'Certificación de Microsoft', kind: 'ai', image: './certs/ia-901.jpg' },
+  { id: 'gh-300', code: 'GH-300', issuer: 'Microsoft', title: 'GitHub Copilot', kind: 'code', image: './certs/gh-300.jpg' },
+  { id: 'dp-900', code: 'DP-900', issuer: 'Microsoft', title: 'Azure Data Fundamentals', kind: 'cloud', image: './certs/dp-900.jpg' },
+  { id: 'databricks', code: 'DBX', issuer: 'Databricks', title: 'Databricks Fundamentals', kind: 'ai', image: './certs/databricks.jpg' },
+  { id: 'ingles-b1', code: 'B1', issuer: 'Idioma inglés', title: 'Suficiencia, nivel B1', kind: 'code', image: './certs/ingles-b1.jpg' },
+  { id: 'congreso', code: 'CONG', issuer: 'Congreso', title: 'Congreso Andino de Ingeniería, Construcción, Tecnología e Innovación', kind: 'cloud', image: './certs/congreso-andino.jpg' },
+  { id: 'innovasoft', code: '2025', issuer: 'Concurso', title: 'Innovasoft 2025: Tecnologías que conectan, ideas que transforman', kind: 'ai', image: './certs/innovasoft-2025.jpg' },
+];
+
 export const sections = [
   { id: 'inicio', label: 'Inicio' },
   { id: 'sobre-mi', label: 'Sobre mí' },
   { id: 'proyectos', label: 'Proyectos' },
   { id: 'habilidades', label: 'Habilidades' },
+  { id: 'certificaciones', label: 'Certificaciones' },
   { id: 'trayectoria', label: 'Trayectoria' },
   { id: 'contacto', label: 'Contacto' },
 ];

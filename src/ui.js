@@ -1,4 +1,4 @@
-import { profile, about, journey, projects, skills, sections } from './data/content.js';
+import { profile, about, journey, projects, skills, sections, certifications } from './data/content.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 
@@ -136,6 +136,15 @@ export function buildUI() {
       </div>
     </section>
 
+    <section class="sec sec--certificaciones" id="certificaciones" data-sec>
+      <div class="stage stage--certs">
+        <div class="certs">
+          <h2 class="section-title">Certificaciones</h2>
+          <ul class="certs__grid">${certifications.map(renderCert).join('')}</ul>
+        </div>
+      </div>
+    </section>
+
     <section class="sec sec--trayectoria" id="trayectoria" data-sec>
       <div class="stage stage--path">
         <div class="path">
@@ -180,7 +189,6 @@ export function buildUI() {
             </div>
           </div>
         </div>
-        <p class="foot">${esc(profile.name)}, ${new Date().getFullYear()}. Hecho con three.js y Vite.</p>
       </div>
     </section>`;
 
@@ -237,6 +245,58 @@ export function setProject(i) {
 }
 
 const SKILL_HINT = `<strong>Elige un nodo</strong><span>Pasa el cursor o toca una habilidad. Cada anillo que la orbita es un año de experiencia (de 1 a 3).</span>`;
+
+function badgeSVG(c) {
+  const col = GROUP_COLORS[c.kind] || GROUP_COLORS.code;
+  const code = esc(c.code);
+  const size = code.length > 4 ? 30 : 38;
+  return `<svg viewBox="0 0 200 140" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id="g-${c.id}" cx="50%" cy="50%" r="60%">
+        <stop offset="0" stop-color="${col}" stop-opacity="0.38"/>
+        <stop offset="1" stop-color="${col}" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <rect width="200" height="140" fill="url(#g-${c.id})"/>
+    <ellipse cx="100" cy="70" rx="86" ry="30" fill="none" stroke="${col}" stroke-opacity="0.35" transform="rotate(-18 100 70)"/>
+    <ellipse cx="100" cy="70" rx="86" ry="30" fill="none" stroke="${col}" stroke-opacity="0.2" transform="rotate(24 100 70)"/>
+    <polygon points="100,18 144,43 144,97 100,122 56,97 56,43" fill="rgba(7,11,31,0.7)" stroke="${col}" stroke-width="2"/>
+    <polygon points="100,30 134,49 134,91 100,110 66,91 66,49" fill="none" stroke="${col}" stroke-opacity="0.4"/>
+    <text x="100" y="78" text-anchor="middle" font-family="Unbounded Variable, sans-serif" font-weight="600" font-size="${size}" fill="#e8ecff">${code}</text>
+    <circle cx="144" cy="43" r="4" fill="${col}"/>
+  </svg>`;
+}
+
+function renderCert(c) {
+  return `<li class="cert" style="--c:${GROUP_COLORS[c.kind] || GROUP_COLORS.code}">
+    <button class="cert__btn" type="button" data-cert="${esc(c.id)}" aria-label="Ver certificado: ${esc(c.title)}">
+      <span class="cert__photo">
+        ${badgeSVG(c)}
+        ${c.image ? `<img src="${esc(c.image)}" alt="Certificado: ${esc(c.title)}" loading="lazy" onload="this.parentNode.classList.add('has-photo')" onerror="this.remove()" />` : ''}
+      </span>
+      <span class="cert__meta"><em>${esc(c.issuer)}</em><strong>${esc(c.title)}</strong></span>
+    </button>
+  </li>`;
+}
+
+export function setupCerts() {
+  const dlg = document.createElement('dialog');
+  dlg.className = 'lightbox';
+  dlg.innerHTML = '<form method="dialog"><button class="lightbox__close" aria-label="Cerrar">Cerrar</button></form><div class="lightbox__body"></div>';
+  document.body.appendChild(dlg);
+  dlg.addEventListener('click', (e) => e.target === dlg && dlg.close());
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-cert]');
+    if (!b) return;
+    const c = certifications.find((x) => x.id === b.dataset.cert);
+    const photo = b.querySelector('.cert__photo');
+    const img = photo.classList.contains('has-photo') ? photo.querySelector('img') : null;
+    dlg.querySelector('.lightbox__body').innerHTML =
+      (img ? `<img src="${esc(img.getAttribute('src'))}" alt="${esc(img.alt)}" />` : `<div class="lightbox__badge">${badgeSVG(c)}</div>`) +
+      `<p><em>${esc(c.issuer)}</em> ${esc(c.title)}</p>`;
+    dlg.showModal();
+  });
+}
 
 export function setSkill(skill) {
   const hud = $('#hud-skill');

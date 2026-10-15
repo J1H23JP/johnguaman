@@ -7,7 +7,7 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 import { journey, projects, skills } from './data/content.js';
-import { buildUI, buildDefectsHud, setPathStep, setProject, setSkill, setupContactForm, toast, toggleHud } from './ui.js';
+import { buildUI, buildDefectsHud, setPathStep, setProject, setSkill, setupContactForm, setupCerts, toast, toggleHud } from './ui.js';
 import { COLORS, createCrystal } from './scene/crystal.js';
 import { createStars } from './scene/stars.js';
 import { createBackdrop } from './scene/backdrop.js';
@@ -21,6 +21,7 @@ const isTouch = window.matchMedia('(pointer: coarse)').matches;
 
 buildUI();
 setupContactForm();
+setupCerts();
 setProject(0);
 
 const canvas = document.getElementById('gl');
@@ -235,7 +236,7 @@ function goToProject(i) {
   window.scrollTo({ top: director.projectScroll(j), behavior: reduced ? 'auto' : 'smooth' });
 }
 
-const PATH_SECTION = 4;
+const PATH_SECTION = 5;
 function goToStep(i) {
   const y = director.stepScroll(PATH_SECTION, i, journey.length);
   window.scrollTo({ top: y, behavior: reduced ? 'auto' : 'smooth' });
@@ -307,7 +308,7 @@ function updateStages(y) {
 function setSection(idx) {
   sectionNow = idx;
   railLinks.forEach((a, i) => (i === idx ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')));
-  const ids = ['inicio', 'sobre-mi', 'proyectos', 'habilidades', 'trayectoria', 'contacto'];
+  const ids = ['inicio', 'sobre-mi', 'proyectos', 'habilidades', 'certificaciones', 'trayectoria', 'contacto'];
   menuLinks.forEach((a) =>
     a.dataset.nav === ids[idx] ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')
   );
