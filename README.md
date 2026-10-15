@@ -1,17 +1,18 @@
 # Portafolio-John-Guaman
 
-Portafolio interactivo hecho con **three.js** y **Vite**. Todo el sitio es una escena 3D: un cristal con defectos escondidos, una galería de proyectos que se recorre con el scroll y una constelación de habilidades.
+Portafolio interactivo hecho con **three.js** y **Vite**. Todo el sitio es una escena 3D: un cristal con defectos escondidos, una galería de proyectos que se recorre con el scroll, una constelación de habilidades y un globo terráqueo de red.
 
 **Demo:** https://j1h23jp.github.io/johnguaman/
 
 ## El concepto
 
-El portafolio es un laboratorio de pruebas, porque ese es el trabajo: encontrar lo que se rompe antes de que lo encuentre un usuario.
+El portafolio de John Guaman, graduado en Ingeniería en Tecnologías de la Información por la Universidad Nacional de Chimborazo y desarrollador de agentes de IA. La escena funciona como un laboratorio: un cristal con defectos que se corrigen, una imagen de la confiabilidad que busca en la IA (guardrails y revisión humana).
 
 - **Inicio y Sobre mí.** Un cristal procedural (shader propio) con cinco defectos magenta repartidos por su superficie. Se gira arrastrando y cada defecto se corrige con un clic. Al corregir los cinco, el sistema muestra "Build verde" y lanza una onda expansiva.
 - **Proyectos.** Láminas 3D en arco. La cámara se detiene en cada una mientras haces scroll. Se puede pasar el cursor, hacer clic, usar los botones o las flechas del teclado.
-- **Habilidades.** Constelación de nodos con etiquetas. Cada color es un grupo: desarrollo, calidad e inteligencia artificial.
-- **Contacto.** Un nudo con el mismo material del cristal, ya sin defectos, y un formulario que envía el mensaje al correo del autor.
+- **Habilidades.** Constelación de nodos con etiquetas. Cada color es un grupo: lenguajes y herramientas, nube e integración, e inteligencia artificial.
+- **Trayectoria.** Línea de tiempo con la experiencia y la formación. El scroll avanza paso a paso (también se puede hacer clic en cada paso) mientras la cámara se acerca a Ecuador en el globo.
+- **Contacto.** Un globo terráqueo de puntos con paquetes de datos que viajan desde distintas ciudades hasta Quito. Incluye un formulario que envía el mensaje al correo del autor (al enviarlo, un paquete cruza la pantalla hasta Quito) y un apartado para descargar el CV en PDF.
 
 ## Tecnología
 
@@ -41,10 +42,15 @@ Todo el texto, los proyectos y las habilidades están en un solo archivo: [`src/
 
 - `profile`: nombre, titular y enlaces. `formTo` es el correo que recibe el formulario de contacto. `email` y `linkedin` son opcionales y agregan botones junto al formulario.
 - `about`: título, párrafos y datos de la sección "Sobre mí".
+- `journey`: pasos de la trayectoria (experiencia y formación). Cada paso lleva organización, enfoque, periodo, puntos (con enlaces opcionales) y etiquetas opcionales.
 - `projects`: cada proyecto se convierte en una lámina 3D. Cambia el título, la descripción, las etiquetas, el enlace y el tono (`hue`, de 0 a 1).
-- `skills`: cada habilidad es un nodo. El campo `group` (`code`, `qa` o `ai`) decide su color.
+- `skills`: cada habilidad es un nodo. El campo `group` (`code`, `cloud` o `ai`) decide su color.
 
 Si agregas o quitas proyectos, la galería y el recorrido de la cámara se ajustan solos.
+
+## Cómo actualizar el CV
+
+El PDF que se descarga es [`public/CV-John-Guaman.pdf`](public/CV-John-Guaman.pdf). Para actualizarlo, reemplaza ese archivo conservando el nombre (o cambia `profile.cv` en `src/data/content.js`). Ten en cuenta que el CV queda publicado: cualquier dato que contenga (teléfono, correo) será accesible para quien abra la página.
 
 ## Formulario de contacto
 
@@ -63,11 +69,12 @@ src/
   ui.js                HTML de las secciones, HUD y avisos
   style.css            Sistema visual y diseño responsive
   data/content.js      Contenido editable
+  data/landmask.js     Máscara de tierra firme del globo (Natural Earth, dominio público)
   scene/
     crystal.js         Cristal con shader, defectos, esquirlas y onda
     gallery.js         Láminas de proyectos y suelo circular
     constellation.js   Nodos de habilidades
-    knot.js            Nudo de la sección de contacto
+    globe.js           Globo de red: continentes de puntos, arcos y paquetes hacia Quito
     stars.js           Campo de partículas con repulsión del cursor
     backdrop.js        Fondo con nebulosa procedural
     director.js        Cámara guiada por el scroll
@@ -90,6 +97,10 @@ El workflow [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) compi
 - Se respeta `prefers-reduced-motion`: sin giro automático, sin aberración y con cámara directa.
 - Foco visible con teclado, enlace para saltar al contenido y navegación por flechas en los proyectos.
 - Sin WebGL, la página muestra el contenido como texto normal.
+
+## Créditos de datos
+
+La silueta de los continentes del globo sale de [Natural Earth](https://www.naturalearthdata.com) (dominio público), procesada a una máscara de 1 grado a partir del paquete npm `world-atlas`.
 
 ## Licencia
 

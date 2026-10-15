@@ -1,4 +1,4 @@
-import { profile, about, projects, skills, sections } from './data/content.js';
+import { profile, about, journey, projects, skills, sections } from './data/content.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 
@@ -9,14 +9,45 @@ const ICON_NEXT =
 
 export const GROUP_COLORS = {
   code: '#4df3e0',
-  qa: '#ff3d8b',
+  cloud: '#ff3d8b',
   ai: '#8e7cff',
 };
 const GROUP_LABELS = {
-  code: 'Desarrollo',
-  qa: 'Calidad',
+  code: 'Lenguajes y herramientas',
+  cloud: 'Nube e integración',
   ai: 'Inteligencia artificial',
 };
+
+function renderPoint(p) {
+  if (typeof p === 'string') return `<li>${esc(p)}</li>`;
+  const link = p.link
+    ? ` <a href="${esc(p.link.url)}" target="_blank" rel="noopener">${esc(p.link.label)}</a>`
+    : '';
+  return `<li>${esc(p.text)}${link}</li>`;
+}
+
+function renderStep(item, i) {
+  const tags = item.tags
+    ? `<ul class="tags">${item.tags.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>`
+    : '';
+  return `
+    <li class="step${i === 0 ? ' is-open' : ''}">
+      <button class="step__head" type="button" data-step="${i}" aria-expanded="${i === 0}" aria-controls="step-body-${i}">
+        <span class="step__dot" aria-hidden="true"></span>
+        <span class="step__title">
+          <strong>${esc(item.org)}</strong>
+          <span class="step__period">${esc(item.period)}</span>
+        </span>
+      </button>
+      <div class="step__body" id="step-body-${i}">
+        <div class="step__inner">
+          <p class="step__focus">${esc(item.focus)}</p>
+          <ul>${item.points.map(renderPoint).join('')}</ul>
+          ${tags}
+        </div>
+      </div>
+    </li>`;
+}
 
 const esc = (s) =>
   String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -37,6 +68,7 @@ export function buildUI() {
         .slice(1)
         .map((s) => `<li><a href="#${s.id}" data-nav="${s.id}">${esc(s.label)}</a></li>`)
         .join('')}
+      <li><a class="menu__cv" href="${esc(profile.cv)}" download>Descargar CV</a></li>
     </ul>`;
 
   // Riel lateral de puntos
@@ -104,6 +136,16 @@ export function buildUI() {
       </div>
     </section>
 
+    <section class="sec sec--trayectoria" id="trayectoria" data-sec>
+      <div class="stage stage--path">
+        <div class="path">
+          <h2 class="section-title">Trayectoria</h2>
+          <ol class="steps" id="steps">${journey.map(renderStep).join('')}</ol>
+          <a class="btn path__cv" href="${esc(profile.cv)}" download>Descargar CV completo</a>
+        </div>
+      </div>
+    </section>
+
     <section class="sec sec--contacto" id="contacto" data-sec>
       <div class="stage">
         <div class="contact">
@@ -130,7 +172,13 @@ export function buildUI() {
               <p class="form__status" id="form-status" role="status" aria-live="polite"></p>
             </div>
           </form>
-          <div class="links">${contactLinks}</div>
+          <div class="cv">
+            <p class="cv__text"><strong>Currículum</strong><span>Descárgalo en PDF si lo necesitas.</span></p>
+            <div class="cv__btns">
+              <a class="btn" href="${esc(profile.cv)}" download>Descargar CV</a>
+              ${contactLinks}
+            </div>
+          </div>
         </div>
         <p class="foot">${esc(profile.name)}, ${new Date().getFullYear()}. Hecho con three.js y Vite.</p>
       </div>
@@ -256,12 +304,21 @@ export function setupContactForm() {
       form.reset();
       say('Mensaje enviado. Gracias, te respondo pronto.', 'ok');
       toast('Mensaje enviado');
+      window.dispatchEvent(new CustomEvent('contact:sent'));
     } catch (err) {
       console.warn('Formulario de contacto:', err);
       say('No se pudo enviar. Inténtalo de nuevo en un momento o escríbeme por GitHub.', 'error');
     } finally {
       button.disabled = false;
     }
+  });
+}
+
+export function setPathStep(i) {
+  document.querySelectorAll('#steps .step').forEach((el, k) => {
+    const open = k === i;
+    el.classList.toggle('is-open', open);
+    el.querySelector('.step__head').setAttribute('aria-expanded', String(open));
   });
 }
 

@@ -64,15 +64,26 @@ function makeStates(projectCount) {
       else o.target.addScaledVector(right, -3.4);
       o.fov = 48;
     },
-    // 4. Contacto: el nudo final, ya sin defectos.
+    // 4. Trayectoria: acercamiento a Ecuador en el globo.
     (u, o, ctx) => {
-      const a = lerp(0.65, -0.1, u);
-      const r = ctx.portrait ? 19 : 11;
+      const a = lerp(0.18, -0.12, u);
+      const r = ctx.portrait ? 17 : 9.5;
+      o.pos.set(Math.sin(a) * r, 0.5, Math.cos(a) * r).add(CONTACT_CENTER);
+      const right = new THREE.Vector3(Math.cos(a), 0, -Math.sin(a));
+      o.target.copy(CONTACT_CENTER);
+      if (ctx.portrait) o.target.y -= 3.4;
+      else o.target.addScaledVector(right, -3.6);
+      o.fov = 45;
+    },
+    // 5. Contacto: el globo completo, con paquetes llegando a Quito.
+    (u, o, ctx) => {
+      const a = lerp(-0.12, 0.1, u);
+      const r = ctx.portrait ? 21 : 12.5;
       o.pos.set(Math.sin(a) * r, 0.6, Math.cos(a) * r).add(CONTACT_CENTER);
       const right = new THREE.Vector3(Math.cos(a), 0, -Math.sin(a));
       o.target.copy(CONTACT_CENTER);
-      if (ctx.portrait) o.target.y -= 4.4;
-      else o.target.addScaledVector(right, -3.6);
+      if (ctx.portrait) o.target.y -= 4.6;
+      else o.target.addScaledVector(right, -3.9);
       o.fov = 45;
     },
   ];
@@ -106,6 +117,18 @@ export class Director {
     const span = Math.max(1, this.heights[s] - this.vh);
     const u = this.projectCount > 1 ? i / (this.projectCount - 1) : 0;
     return top + u * span;
+  }
+
+  // Progreso (0 a 1) dentro de la parte fija de la seccion s.
+  progress(s, y) {
+    const span = Math.max(1, this.heights[s] - this.vh);
+    return clamp((y - this.tops[s]) / span, 0, 1);
+  }
+
+  // Scroll (px) al que arranca el paso i de n dentro de la seccion s.
+  stepScroll(s, i, n) {
+    const span = Math.max(1, this.heights[s] - this.vh);
+    return this.tops[s] + ((i + 0.5) / n) * span;
   }
 
   evaluate(y, aspect) {

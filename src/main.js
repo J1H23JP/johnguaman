@@ -6,14 +6,14 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-import { projects, skills } from './data/content.js';
-import { buildUI, buildDefectsHud, setProject, setSkill, setupContactForm, toast, toggleHud } from './ui.js';
+import { journey, projects, skills } from './data/content.js';
+import { buildUI, buildDefectsHud, setPathStep, setProject, setSkill, setupContactForm, toast, toggleHud } from './ui.js';
 import { COLORS, createCrystal } from './scene/crystal.js';
 import { createStars } from './scene/stars.js';
 import { createBackdrop } from './scene/backdrop.js';
 import { createGallery, GALLERY_CENTER } from './scene/gallery.js';
 import { createConstellation, CONSTELLATION_CENTER } from './scene/constellation.js';
-import { createKnot } from './scene/knot.js';
+import { createGlobe } from './scene/globe.js';
 import { Director, CONTACT_CENTER } from './scene/director.js';
 
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -79,8 +79,7 @@ scene.add(gallery.group);
 
 let constellation = null; // se crea cuando la tipografia ya cargo (etiquetas en canvas)
 
-const knot = createKnot();
-scene.add(knot.group);
+let globe = null; // se crea cuando la tipografia ya cargo (etiqueta en canvas)
 
 // ---------------------------------------------------------------- Postproceso
 
@@ -138,6 +137,7 @@ const lookAt = new THREE.Vector3(-1.8, -0.1, 0);
 const prevBase = new THREE.Vector3().copy(camBase);
 
 let activeProject = 0;
+let activePath = 0;
 let hoverCard = -1;
 let hoverSkill = -1;
 let hoverDefect = -1;
@@ -235,6 +235,12 @@ function goToProject(i) {
   window.scrollTo({ top: director.projectScroll(j), behavior: reduced ? 'auto' : 'smooth' });
 }
 
+const PATH_SECTION = 4;
+function goToStep(i) {
+  const y = director.stepScroll(PATH_SECTION, i, journey.length);
+  window.scrollTo({ top: y, behavior: reduced ? 'auto' : 'smooth' });
+}
+
 function goToSection(id) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -249,6 +255,8 @@ document.addEventListener('click', (e) => {
     goToSection(nav.dataset.nav);
     return;
   }
+  const step = e.target.closest('[data-step]');
+  if (step) goToStep(Number(step.dataset.step));
   if (e.target.closest('#hp-prev')) goToProject(activeProject - 1);
   if (e.target.closest('#hp-next')) goToProject(activeProject + 1);
   const mail = e.target.closest('#copy-mail');
@@ -269,6 +277,10 @@ window.addEventListener('keydown', (e) => {
     e.preventDefault();
     goToProject(activeProject - 1);
   }
+});
+
+window.addEventListener('contact:sent', () => {
+  if (globe && globe.group.visible) globe.send(camera, camera.aspect < 0.9);
 });
 
 // ---------------------------------------------------------------- Scroll y secciones
@@ -295,7 +307,7 @@ function updateStages(y) {
 function setSection(idx) {
   sectionNow = idx;
   railLinks.forEach((a, i) => (i === idx ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')));
-  const ids = ['inicio', 'sobre-mi', 'proyectos', 'habilidades', 'contacto'];
+  const ids = ['inicio', 'sobre-mi', 'proyectos', 'habilidades', 'trayectoria', 'contacto'];
   menuLinks.forEach((a) =>
     a.dataset.nav === ids[idx] ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')
   );
@@ -391,7 +403,7 @@ function frame() {
   crystal.group.visible = cp.distanceTo(crystal.group.position) < 40;
   gallery.group.visible = cp.distanceTo(GALLERY_CENTER) < 34;
   if (constellation) constellation.group.visible = cp.distanceTo(CONSTELLATION_CENTER) < 38;
-  knot.group.visible = cp.distanceTo(CONTACT_CENTER) < 38;
+  if (globe) globe.group.visible = cp.distanceTo(CONTACT_CENTER) < 48;
 
   // Cristal: arrastre con inercia + giro lento.
   if (crystal.group.visible) {
@@ -439,9 +451,17 @@ function frame() {
       setProject(idx);
     }
   }
+  if (sectionNow === PATH_SECTION) {
+    const u = director.progress(PATH_SECTION, y);
+    const idx = THREE.MathUtils.clamp(Math.floor(u * journey.length), 0, journey.length - 1);
+    if (idx !== activePath) {
+      activePath = idx;
+      setPathStep(idx);
+    }
+  }
   if (gallery.group.visible) gallery.update(t, dt, sectionNow === 2 ? activeProject : -1, hoverCard, reduced);
   if (constellation && constellation.group.visible) constellation.update(t, dt, parallax, hoverSkill, camera, reduced);
-  if (knot.group.visible) knot.update(t, dt, parallax, reduced);
+  if (globe && globe.group.visible) globe.update(t, dt, parallax, camera, window.innerHeight * pixelRatio, reduced);
 
   stars.update(t, dt, pointer, reduced || isTouch);
   backdrop.update(t, camera, THREE.MathUtils.clamp(y / maxScroll, 0, 1));
@@ -460,6 +480,8 @@ async function start() {
   await constellationReady();
   constellation = createConstellation(skills);
   scene.add(constellation.group);
+  globe = createGlobe();
+  scene.add(globe.group);
   buildDefectsHud(0, crystal.count);
   setSection(0);
   requestAnimationFrame(frame);
@@ -469,6 +491,7 @@ async function start() {
 async function constellationReady() {
   try {
     await document.fonts.load('600 54px "Instrument Sans Variable"');
+    await document.fonts.load('600 56px "Instrument Sans Variable"');
   } catch {
     /* sin tipografia personalizada: se usa la del sistema */
   }

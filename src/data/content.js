@@ -1,32 +1,84 @@
 // Todo el contenido del portafolio vive aquí.
-// Edita este archivo y la página se actualiza sola (texto, proyectos y habilidades).
+// Edita este archivo y la página se actualiza sola (texto, trayectoria, proyectos y habilidades).
+// Los datos de formación, experiencia y habilidades salen del CV de John Guaman.
 
 export const profile = {
   name: 'John Guaman',
-  role: 'Desarrollo y calidad de software',
-  headline: 'Encuentro el defecto antes de que lo encuentre un usuario.',
-  intro:
-    'Desarrollo software y lo pruebo con el mismo cuidado. Me interesan las pruebas, la automatización y las aplicaciones con IA que se pueden confiar en producción.',
+  role: 'Agentes de IA y desarrollo de software',
+  headline: 'Diseño agentes de IA que automatizan procesos y saben cuándo pasar el control a una persona.',
   github: 'https://github.com/J1H23JP',
   // Correo que recibe los mensajes del formulario de contacto (servicio FormSubmit).
   formTo: 'johnguaman2003@gmail.com',
   // Opcionales: si los completas, aparecen como botones junto al formulario.
   email: '',
   linkedin: '',
+  // PDF que se descarga desde la sección de contacto (archivo en la carpeta public/).
+  cv: './CV-John-Guaman.pdf',
 };
 
 export const about = {
-  title: 'Construyo y rompo para que nada se rompa solo',
+  title: 'Agentes de IA en los que se puede confiar',
   paragraphs: [
-    'Trabajo en el cruce entre desarrollo y aseguramiento de calidad. Escribo código, diseño casos de prueba y automatizo lo repetitivo para que el equipo pueda avanzar sin miedo a romper algo.',
-    'Últimamente exploro agentes con modelos de lenguaje y componentes de interfaz que se conectan a herramientas externas.',
+    'Soy graduado en Ingeniería en Tecnologías de la Información por la Universidad Nacional de Chimborazo. Hoy diseño agentes de IA para automatizar la gestión de incidentes en banca, en Tata Consultancy Services.',
+    'Me importa que la IA sea confiable: respuestas ancladas a una base de conocimiento, puntuación de confiabilidad y revisión humana cuando hace falta.',
   ],
   facts: [
-    { term: 'Enfoque', detail: 'Pruebas manuales y automatizadas' },
-    { term: 'Explorando', detail: 'Agentes con IA y MCP' },
-    { term: 'Ubicación', detail: 'Ecuador' },
+    { term: 'Hoy', detail: 'Agentes de IA en Tata Consultancy Services' },
+    { term: 'Formación', detail: 'Ingeniería en TI, UNACH' },
+    { term: 'Ubicación', detail: 'Quito, Ecuador' },
   ],
 };
+
+// Trayectoria: cada elemento es un paso del recorrido (el scroll avanza de uno en uno).
+export const journey = [
+  {
+    org: 'Tata Consultancy Services',
+    focus: 'Agentes de IA para el sector bancario',
+    period: 'Mar 2026 - actualidad',
+    points: [
+      'Agentes de IA que automatizan la gestión de incidentes: clasifican, escalan y recomiendan una resolución.',
+      'Soluciones RAG en Azure (AI Search, OpenAI, Logic Apps) integradas con ServiceNow y Microsoft Teams.',
+      'Agentes con arquitectura MCP, y evaluación de RAG, CAG, GraphRAG y Azure AI Foundry según costo, control y escalabilidad.',
+      'Guardrails: respuestas ancladas a la base de conocimiento, puntuación de confiabilidad y revisión humana.',
+      'Demos de IA agéntica ante equipos ejecutivos y toda la organización de TCS Ecuador.',
+    ],
+  },
+  {
+    org: 'Dirección de Gestión de la Calidad, Universidad Nacional de Chimborazo',
+    focus: 'Documentación, automatización y auditoría interna',
+    period: 'Abr 2025 - Jul 2025',
+    points: [
+      'Levantamiento, revisión y actualización de la documentación de procesos: formatos, registros y evidencias.',
+      {
+        text: 'Automatización de procesos y publicación en un sitio web:',
+        link: { label: 'usgc.unach.edu.ec', url: 'https://usgc.unach.edu.ec' },
+      },
+      'Apoyo en la auditoría interna a cada departamento de la universidad, con procesamiento e interpretación de los datos obtenidos.',
+    ],
+  },
+  {
+    org: 'GAD Municipal de Puela',
+    focus: 'Soporte técnico y desarrollo web',
+    period: 'Oct 2024 - Feb 2025',
+    points: [
+      'Soporte técnico a usuarios: instalación, configuración y solución de incidencias en equipos y software.',
+      {
+        text: 'Desarrollo del sitio web de la parroquia para difundir su información:',
+        link: { label: 'puela.gob.ec', url: 'https://puela.gob.ec' },
+      },
+    ],
+  },
+  {
+    org: 'Universidad Nacional de Chimborazo',
+    focus: 'Graduado en Ingeniería en Tecnologías de la Información',
+    period: '2022 - 2026',
+    points: [
+      'Proyecto de titulación: prototipo móvil y web para gestionar la disponibilidad y alertar intrusiones con autenticación facial en los parqueaderos de la Cooperativa "Señor del Buen Suceso". Lo expuse en un congreso.',
+      'Ganador del concurso al mejor proyecto de tecnología de la universidad, con un prototipo que traduce lenguaje natural a lenguaje de señas y viceversa.',
+    ],
+    tags: ['Microsoft AZ-900', 'Microsoft IA-901', 'Microsoft GH-300', 'Microsoft DP-900', 'Databricks Fundamentals', 'Inglés B1'],
+  },
+];
 
 // Cada proyecto aparece como una lámina 3D en la galería.
 export const projects = [
@@ -67,21 +119,23 @@ export const projects = [
   },
 ];
 
-// Cada habilidad es un nodo en la constelación. "group" decide el color.
+// Cada habilidad es un nodo en la constelación. "group" decide el color: code, cloud o ai.
 export const skills = [
-  { name: 'JavaScript', group: 'code', note: 'Lenguaje principal para web y herramientas.' },
-  { name: 'Python', group: 'code', note: 'Scripts, automatización y trabajo con datos.' },
-  { name: 'React', group: 'code', note: 'Interfaces web por componentes.' },
-  { name: 'Node.js', group: 'code', note: 'Servicios y herramientas de línea de comandos.' },
-  { name: 'React Native', group: 'code', note: 'Aplicaciones móviles con Expo.' },
-  { name: 'SQL', group: 'code', note: 'Consultas y modelado de datos.' },
-  { name: 'Git', group: 'code', note: 'Control de versiones y trabajo en equipo.' },
-  { name: 'Pruebas manuales', group: 'qa', note: 'Exploración y diseño de casos de prueba.' },
-  { name: 'Automatización', group: 'qa', note: 'Pruebas automáticas que corren solas.' },
-  { name: 'Pruebas de API', group: 'qa', note: 'Validación de servicios y contratos.' },
-  { name: 'IA generativa', group: 'ai', note: 'Aplicaciones con modelos de lenguaje.' },
-  { name: 'Agentes', group: 'ai', note: 'Flujos donde el modelo usa herramientas.' },
-  { name: 'MCP', group: 'ai', note: 'Conexión entre modelos y herramientas externas.' },
+  { name: 'Python', group: 'code', note: 'Lenguaje de programación.' },
+  { name: 'SQL', group: 'code', note: 'Lenguaje de consulta de datos.' },
+  { name: 'JavaScript', group: 'code', note: 'Lenguaje de programación para web.' },
+  { name: 'Git y GitHub', group: 'code', note: 'Control de versiones. También uso GitHub Copilot.' },
+  { name: 'Azure', group: 'cloud', note: 'AI Foundry, AI Search, Logic Apps y Functions.' },
+  { name: 'Databricks', group: 'cloud', note: 'Certificación Databricks Fundamentals.' },
+  { name: 'ServiceNow', group: 'cloud', note: 'Integrado con agentes de IA para la gestión de incidentes.' },
+  { name: 'APIs REST', group: 'cloud', note: 'Integración entre servicios y herramientas.' },
+  { name: 'Azure OpenAI', group: 'ai', note: 'Modelos GPT-4o en soluciones RAG y agentes.' },
+  { name: 'RAG', group: 'ai', note: 'Soluciones sobre Azure AI Search y OpenAI, integradas con ServiceNow y Teams.' },
+  { name: 'Agentes', group: 'ai', note: 'Con uso de herramientas y guardrails para automatizar incidentes en banca.' },
+  { name: 'MCP', group: 'ai', note: 'Agentes con arquitectura MCP para automatizar flujos de datos y reportes.' },
+  { name: 'LangChain', group: 'ai', note: 'Framework para aplicaciones con modelos de lenguaje.' },
+  { name: 'LangGraph', group: 'ai', note: 'Framework para flujos de agentes.' },
+  { name: 'Semantic Kernel', group: 'ai', note: 'SDK de Microsoft para orquestar modelos de lenguaje.' },
 ];
 
 export const sections = [
@@ -89,5 +143,6 @@ export const sections = [
   { id: 'sobre-mi', label: 'Sobre mí' },
   { id: 'proyectos', label: 'Proyectos' },
   { id: 'habilidades', label: 'Habilidades' },
+  { id: 'trayectoria', label: 'Trayectoria' },
   { id: 'contacto', label: 'Contacto' },
 ];

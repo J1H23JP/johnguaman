@@ -5,7 +5,7 @@ const RADIUS = 7;
 
 const GROUP_COLORS = {
   code: new THREE.Color('#4df3e0'),
-  qa: new THREE.Color('#ff3d8b'),
+  cloud: new THREE.Color('#ff3d8b'),
   ai: new THREE.Color('#8e7cff'),
 };
 
