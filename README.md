@@ -11,7 +11,8 @@ El portafolio de John Guaman, graduado en Ingeniería en Tecnologías de la Info
 - **Inicio y Sobre mí.** Un cristal procedural (shader propio) con cinco defectos magenta repartidos por su superficie. Se gira arrastrando y cada defecto se corrige con un clic. Al corregir los cinco, el sistema muestra "Build verde" y lanza una onda expansiva.
 - **Proyectos.** Láminas 3D en arco. La cámara se detiene en cada una mientras haces scroll. Se puede pasar el cursor, hacer clic, usar los botones o las flechas del teclado.
 - **Habilidades.** Constelación de nodos con etiquetas. Cada color es un grupo: lenguajes y herramientas, nube e integración, e inteligencia artificial. Cada habilidad tiene de 1 a 3 años de experiencia: el tamaño del nodo y la cantidad de anillos con satélite que lo orbitan lo reflejan. Al pasar el cursor (o tocar), se resaltan sus conexiones, el resto se atenúa y aparece una tarjeta con los años, el resumen y dónde la usé.
-- **Certificaciones.** Tarjetas con la foto de cada certificado (si no hay foto, se muestra una insignia generada). Al hacer clic se abre ampliada. El globo se ve a lo lejos mientras tanto.
+- **Certificaciones.** Una tarjeta por certificado, con su insignia oficial, fecha de obtención y vencimiento. Al hacer clic en el bloque se abre la imagen del certificado ampliada. Si todavía no hay imagen, se muestra una insignia generada.
+- **Idioma y tema.** Botones en la barra superior: español o inglés, y tema oscuro o claro. Ambos se recuerdan en el navegador. El tema claro invierte el lienzo 3D con un filtro CSS; el cambio de idioma recarga la página para reconstruir la escena con los textos nuevos.
 - **Trayectoria.** Línea de tiempo con la experiencia y la formación. El scroll avanza paso a paso (también se puede hacer clic en cada paso) mientras la cámara se acerca a Ecuador en el globo.
 - **Contacto.** Un globo terráqueo de puntos con paquetes de datos que viajan desde distintas ciudades hasta Quito. Incluye un formulario que envía el mensaje al correo del autor (al enviarlo, un paquete cruza la pantalla hasta Quito) y un apartado para descargar el CV en PDF.
 
@@ -39,12 +40,12 @@ npm run preview   # sirve dist/ para probar el build
 
 ## Cómo editar el contenido
 
-Todo el texto, los proyectos y las habilidades están en un solo archivo: [`src/data/content.js`](src/data/content.js).
+Todo el contenido está en `src/data/`: [`content.es.js`](src/data/content.es.js) tiene los datos y los textos en español, y [`content.en.js`](src/data/content.en.js) solo los textos en inglés (mismo orden de elementos). `content.js` elige el idioma activo. Los textos de la interfaz (botones, avisos) están en [`src/i18n.js`](src/i18n.js).
 
 - `profile`: nombre, titular y enlaces. `formTo` es el correo que recibe el formulario de contacto. `email` y `linkedin` son opcionales y agregan botones junto al formulario.
 - `about`: título, párrafos y datos de la sección "Sobre mí".
 - `journey`: pasos de la trayectoria (experiencia y formación). Cada paso lleva organización, enfoque, periodo, puntos (con enlaces opcionales) y etiquetas opcionales.
-- `certifications`: cada certificación lleva `code`, `issuer`, `title`, `kind` (color) e `image`. Para mostrar la foto real, copia el archivo a `public/certs/` con el nombre indicado en `image` (por ejemplo `public/certs/az-900.jpg`).
+- `certifications`: cada certificación lleva `code`, `issuer`, `title`, `kind` (color), `date`, `expires` (opcional), `image` (foto del certificado) y `badge` (insignia recortada, opcional). Copia las imágenes a `public/certs/` con el nombre indicado. Para agregar una nueva, añade su entrada en ambos archivos de contenido.
 - `projects`: cada proyecto se convierte en una lámina 3D. Cambia el título, la descripción, las etiquetas, el enlace y el tono (`hue`, de 0 a 1).
 - `skills`: cada habilidad es un nodo. `group` (`code`, `cloud` o `ai`) decide su color; `years` (1 a 3) el tamaño y los anillos; `since` el año de inicio aproximado; `summary` la frase principal y `used` la lista de dónde la apliqué. Los años son una estimación: ajústalos a tu experiencia real.
 
@@ -69,6 +70,7 @@ El formulario no necesita backend: usa [FormSubmit](https://formsubmit.co), un s
 src/
   main.js              Renderer, postproceso, interacción y bucle principal
   ui.js                HTML de las secciones, HUD y avisos
+  i18n.js              Idioma, tema y textos de la interfaz
   style.css            Sistema visual y diseño responsive
   data/content.js      Contenido editable
   data/landmask.js     Máscara de tierra firme del globo (Natural Earth, dominio público)
@@ -91,6 +93,10 @@ El workflow [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) compi
 3. Haz push a `main`. La URL final queda en `https://<usuario>.github.io/<repositorio>/`.
 
 `vite.config.js` usa `base: './'`, así que el build funciona en cualquier subruta o hosting estático sin cambios.
+
+## Vista previa al compartir
+
+Al compartir el enlace (LinkedIn, WhatsApp), la tarjeta usa `public/og.jpg` (1200x630). Para cambiarla, reemplaza ese archivo.
 
 ## Rendimiento y accesibilidad
 

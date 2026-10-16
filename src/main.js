@@ -7,7 +7,8 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 import { journey, projects, skills } from './data/content.js';
-import { buildUI, buildDefectsHud, setPathStep, setProject, setSkill, setupContactForm, setupCerts, toast, toggleHud } from './ui.js';
+import { buildUI, buildDefectsHud, setPathStep, setProject, setSkill, setupContactForm, setupCerts, setupTools, toast, toggleHud } from './ui.js';
+import { t, applyDocumentLanguage } from './i18n.js';
 import { COLORS, createCrystal } from './scene/crystal.js';
 import { createStars } from './scene/stars.js';
 import { createBackdrop } from './scene/backdrop.js';
@@ -19,7 +20,9 @@ import { Director, CONTACT_CENTER } from './scene/director.js';
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isTouch = window.matchMedia('(pointer: coarse)').matches;
 
+applyDocumentLanguage();
 buildUI();
+setupTools();
 setupContactForm();
 setupCerts();
 setProject(0);
@@ -214,9 +217,9 @@ function handleClick() {
       if (count === crystal.count) {
         crystal.burst();
         stars.burst();
-        toast('Build verde: todos los defectos corregidos');
+        toast(t.toastGreen);
       } else {
-        toast(`Defecto corregido: ${count} de ${crystal.count}`);
+        toast(t.toastFixed(count, crystal.count));
       }
     }
   } else if (sectionNow === 2) {
@@ -264,7 +267,7 @@ document.addEventListener('click', (e) => {
   if (mail) {
     navigator.clipboard
       ?.writeText(mail.dataset.mail)
-      .then(() => toast('Correo copiado'))
+      .then(() => toast(t.mailCopied))
       .catch(() => toast(mail.dataset.mail));
   }
 });

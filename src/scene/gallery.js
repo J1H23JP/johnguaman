@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { t } from '../i18n.js';
 import { COLORS } from './crystal.js';
 
 export const GALLERY_CENTER = new THREE.Vector3(0, 0, -42);
@@ -109,7 +110,7 @@ function drawCard(project, index, total) {
   ctx.font = '600 28px "Instrument Sans Variable", sans-serif';
   ctx.fillStyle = accent;
   ctx.textAlign = 'right';
-  ctx.fillText(`${index + 1} de ${total}`, W - 64, 100);
+  ctx.fillText(t.countOf(index + 1, total), W - 64, 100);
   ctx.textAlign = 'left';
 
   // Marco.

@@ -9,12 +9,29 @@
       content="Portafolio 3D interactivo de John Guaman: desarrollo de software, pruebas y aplicaciones con IA."
     />
     <meta name="theme-color" content="#070b1f" />
+    <script>
+      // Tema guardado, aplicado antes de pintar para evitar el parpadeo.
+      (function () {
+        try {
+          var th = localStorage.getItem('theme');
+          if (th === 'light') {
+            document.documentElement.dataset.theme = 'light';
+            document.querySelector('meta[name="theme-color"]').setAttribute('content', '#e9edfb');
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta property="og:title" content="Portafolio-John-Guaman" />
     <meta
       property="og:description"
       content="Gira el cristal, corrige los defectos y recorre mis proyectos en 3D."
     />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://j1h23jp.github.io/johnguaman/" />
+    <meta property="og:image" content="https://j1h23jp.github.io/johnguaman/og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
   </head>
   <body>
