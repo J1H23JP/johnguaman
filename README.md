@@ -12,6 +12,7 @@ El portafolio de John Guaman, graduado en Ingeniería en Tecnologías de la Info
 - **Proyectos.** Láminas 3D en arco. La cámara se detiene en cada una mientras haces scroll. Se puede pasar el cursor, hacer clic, usar los botones o las flechas del teclado.
 - **Habilidades.** Constelación de nodos con etiquetas. Cada color es un grupo: lenguajes y herramientas, nube e integración, e inteligencia artificial. Cada habilidad tiene de 1 a 3 años de experiencia: el tamaño del nodo y la cantidad de anillos con satélite que lo orbitan lo reflejan. Al pasar el cursor (o tocar), se resaltan sus conexiones, el resto se atenúa y aparece una tarjeta con los años, el resumen y dónde la usé.
 - **Certificaciones.** Una tarjeta por certificado, con su insignia oficial, fecha de obtención y vencimiento. Al hacer clic en el bloque se abre la imagen del certificado ampliada. Si todavía no hay imagen, se muestra una insignia generada.
+- **Agente demo.** Un chat que responde preguntas sobre John solo con lo que está en el portafolio, sin modelo de lenguaje ni servidor. Divide la pregunta en términos, los busca en una base de conocimiento armada con los mismos datos de la página (búsqueda BM25), calcula la confiabilidad (cuánto de la pregunta pudo cubrir), cita la fuente y muestra cómo decidió. Si la cobertura es baja, o la pregunta es privada, fuera de tema o un intento de cambiarle las reglas, no inventa: pasa la pregunta a John con un botón que la copia al formulario de contacto. Está en `src/agent.js`; los textos del agente están al inicio de ese archivo, en español e inglés.
 - **Idioma y tema.** Botones en la barra superior: español o inglés, y tema oscuro o claro. Ambos se recuerdan en el navegador. El tema claro invierte el lienzo 3D con un filtro CSS; el cambio de idioma recarga la página para reconstruir la escena con los textos nuevos.
 - **Trayectoria.** Línea de tiempo con la experiencia y la formación. El scroll avanza paso a paso (también se puede hacer clic en cada paso) mientras la cámara se acerca a Ecuador en el globo.
 - **Contacto.** Un globo terráqueo de puntos con paquetes de datos que viajan desde distintas ciudades hasta Quito. Incluye un formulario que envía el mensaje al correo del autor (al enviarlo, un paquete cruza la pantalla hasta Quito) y un apartado para descargar el CV en PDF.
@@ -70,6 +71,7 @@ El formulario no necesita backend: usa [FormSubmit](https://formsubmit.co), un s
 src/
   main.js              Renderer, postproceso, interacción y bucle principal
   ui.js                HTML de las secciones, HUD y avisos
+  agent.js             Agente demo: base de conocimiento, búsqueda, decisión y chat
   i18n.js              Idioma, tema y textos de la interfaz
   style.css            Sistema visual y diseño responsive
   data/content.js      Contenido editable
@@ -93,6 +95,10 @@ El workflow [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) compi
 3. Haz push a `main`. La URL final queda en `https://<usuario>.github.io/<repositorio>/`.
 
 `vite.config.js` usa `base: './'`, así que el build funciona en cualquier subruta o hosting estático sin cambios.
+
+## Responsive
+
+Probado desde 320 px hasta 1920 px de ancho, en vertical y horizontal. Por debajo de 1100 px el menú pasa a un desplegable; en pantallas muy bajas se compactan los textos para que cada sección quepa sin desplazarse.
 
 ## Vista previa al compartir
 

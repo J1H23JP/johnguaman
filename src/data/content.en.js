@@ -42,7 +42,6 @@ export const journey = [
     ],
   },
   {
-    org: 'Municipal Government of Puela',
     focus: 'Technical support and web development',
     period: 'Oct 2024 - Feb 2025',
     points: [
@@ -72,15 +71,15 @@ export const projects = [
 export const skills = [
   { note: 'Programming language.', summary: 'My base language since university, now for AI agents and automation.', used: ['IT Engineering studies at UNACH', 'Agents and data flows at Tata Consultancy Services'] },
   { note: 'Data query language.', summary: 'Querying and analyzing data, from academic training to working with data.', used: ['Database training at UNACH', 'Processing internal audit data'] },
-  { note: 'Programming language for the web.', summary: 'Web interface development, including this Three.js portfolio.', used: ['Puela Municipal Government website', 'This 3D portfolio'] },
-  { note: 'Version control. I also use GitHub Copilot.', summary: 'Version control and project publishing, with GitHub Copilot support.', used: ['Personal project repositories', 'Deploying this site with GitHub Actions'] },
+  { note: 'Programming language for the web.', summary: 'Web interface development, including this Three.js portfolio.', used: ['Website of the GAD Municipal de Puela', 'This 3D portfolio'] },
+  { name: 'Git and GitHub', note: 'Version control. I also use GitHub Copilot.', summary: 'Version control and project publishing, with GitHub Copilot support.', used: ['Personal project repositories', 'Deploying this site with GitHub Actions'] },
   { note: 'AI Foundry, AI Search, Logic Apps and Functions.', summary: 'The platform where I build AI solutions for banking.', used: ['Azure AI Search and Azure AI Foundry', 'Logic Apps and Functions for integrations'] },
   { note: 'Databricks Generative AI Fundamentals accreditation.', summary: 'Generative AI fundamentals on the data platform, accredited in March 2026.', used: ['Databricks Generative AI Fundamentals accreditation'] },
   { note: 'Integrated with AI agents for incident management.', summary: 'Incident management connected to AI agents.', used: ['Agents that classify, escalate and recommend a resolution', 'Integration with Microsoft Teams'] },
   { note: 'Integration between services and tools.', summary: 'Connecting services, tools and agents.', used: ['Integrations between ServiceNow, Teams and Azure', 'Process automation at UNACH'] },
   { note: 'GPT-4o models in RAG solutions and agents.', summary: 'GPT-4o models as the engine of the RAG solutions and agents.', used: ['RAG solutions with Azure AI Search', 'Incident management agents'] },
   { note: 'Solutions on Azure AI Search and OpenAI, integrated with ServiceNow and Teams.', summary: 'Answers grounded in a knowledge base, evaluated against CAG and GraphRAG.', used: ['Solutions on Azure AI Search and OpenAI', 'Integration with ServiceNow and Microsoft Teams'] },
-  { note: 'With tool use and guardrails to automate incidents in banking.', summary: 'Agents with tools, guardrails and human review for the banking sector.', used: ['Incident automation in banking', 'Demos for TCS Ecuador executive teams'] },
+  { name: 'Agents', note: 'With tool use and guardrails to automate incidents in banking.', summary: 'Agents with tools, guardrails and human review for the banking sector.', used: ['Incident automation in banking', 'Demos for TCS Ecuador executive teams'] },
   { note: 'Agents with MCP architecture to automate data flows and reports.', summary: 'MCP architecture to connect agents with data and generate reports.', used: ['MCP agents for data flows and reports'] },
   { note: 'Framework for applications with language models.', summary: 'Framework to build applications with language models.', used: ['Agent prototypes and tool chains'] },
   { note: 'Framework for agent workflows.', summary: 'Stateful agent workflows with explicit control.', used: ['Agent workflow prototypes'] },

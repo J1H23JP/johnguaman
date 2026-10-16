@@ -68,7 +68,7 @@ export function buildUI() {
       </svg>
       <span>${esc(profile.name)}</span>
     </a>
-    <ul class="menu">
+    <ul class="menu" id="menu-list">
       ${sections
         .slice(1)
         .map((s) => `<li><a href="#${s.id}" data-nav="${s.id}">${esc(s.label)}</a></li>`)
@@ -78,6 +78,9 @@ export function buildUI() {
     <div class="tools">
       <button class="tool tool--lang" id="btn-lang" type="button" aria-label="${t.toLang}" title="${t.toLang}">${t.langBtn}</button>
       <button class="tool tool--theme" id="btn-theme" type="button">${ICON_SUN}${ICON_MOON}</button>
+      <button class="tool tool--menu" id="btn-menu" type="button" aria-expanded="false" aria-controls="menu-list" aria-label="${t.menu}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
     </div>`;
   updateThemeButton();
 
@@ -347,6 +350,23 @@ export function setupCerts() {
 }
 
 export function setupTools() {
+  // Menu desplegable en pantallas chicas: se cierra al elegir una seccion, al tocar fuera o con Escape.
+  const html = document.documentElement;
+  const btn = $('#btn-menu');
+  const setMenu = (open) => {
+    html.classList.toggle('menu-open', open);
+    btn.setAttribute('aria-expanded', String(open));
+  };
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setMenu(!html.classList.contains('menu-open'));
+  });
+  document.addEventListener('click', (e) => {
+    if (!html.classList.contains('menu-open')) return;
+    if (e.target.closest('#menu-list a') || !e.target.closest('#menu-list')) setMenu(false);
+  });
+  window.addEventListener('keydown', (e) => e.key === 'Escape' && setMenu(false));
+
   $('#btn-lang').addEventListener('click', () => setLang(lang === 'es' ? 'en' : 'es'));
   $('#btn-theme').addEventListener('click', () => {
     setTheme(getTheme() === 'light' ? 'dark' : 'light');

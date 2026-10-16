@@ -9,6 +9,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { journey, projects, skills } from './data/content.js';
 import { buildUI, buildDefectsHud, setPathStep, setProject, setSkill, setupContactForm, setupCerts, setupTools, toast, toggleHud } from './ui.js';
 import { t, applyDocumentLanguage } from './i18n.js';
+import { setupAgent } from './agent.js';
 import { COLORS, createCrystal } from './scene/crystal.js';
 import { createStars } from './scene/stars.js';
 import { createBackdrop } from './scene/backdrop.js';
@@ -23,6 +24,7 @@ const isTouch = window.matchMedia('(pointer: coarse)').matches;
 applyDocumentLanguage();
 buildUI();
 setupTools();
+setupAgent();
 setupContactForm();
 setupCerts();
 setProject(0);
@@ -274,6 +276,7 @@ document.addEventListener('click', (e) => {
 
 window.addEventListener('keydown', (e) => {
   if (sectionNow !== 2) return;
+  if (e.target.closest && e.target.closest('input, textarea, dialog, [role="dialog"]')) return;
   if (e.key === 'ArrowRight') {
     e.preventDefault();
     goToProject(activeProject + 1);
