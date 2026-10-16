@@ -204,6 +204,7 @@ a {
 }
 .menu a {
   position: relative;
+  white-space: nowrap;
   text-decoration: none;
   font-size: 0.95rem;
   color: var(--mute);
@@ -1707,6 +1708,28 @@ h2 {
   border-color: var(--probe);
   color: var(--probe);
 }
+/* Con mouse no hay gesto para deslizar: las preguntas se acomodan en varias filas. */
+@media (hover: hover) and (pointer: fine) {
+  .agent__chips {
+    flex-wrap: wrap;
+    max-height: 11rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  .agent__chips::-webkit-scrollbar {
+    display: block;
+    width: 6px;
+  }
+  .agent__chips::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 6px;
+  }
+  .agent__chips button {
+    white-space: normal;
+    text-align: left;
+  }
+}
 .agent__form {
   display: flex;
   gap: 0.5rem;
@@ -1776,7 +1799,7 @@ h2 {
 .tool--menu {
   display: none;
 }
-@media (max-width: 1100px) {
+@media (max-width: 1400px) {
   .tool--menu {
     display: inline-grid;
   }
