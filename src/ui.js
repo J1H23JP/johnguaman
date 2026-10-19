@@ -113,6 +113,7 @@ export function buildUI() {
             <a class="btn btn--solid" href="#proyectos" data-nav="proyectos">${t.viewProjects}</a>
             <a class="btn" href="#contacto" data-nav="contacto">${t.contact}</a>
           </div>
+          <p class="hero__kbd" aria-hidden="true">${t.palKbdHint} <kbd>${/Mac|iPhone|iPad/.test(navigator.platform || '') ? '⌘' : 'Ctrl'}</kbd> <kbd>K</kbd></p>
         </div>
       </div>
     </section>
@@ -199,6 +200,7 @@ export function buildUI() {
             <p class="cv__text"><strong>${t.cvTitle}</strong><span>${t.cvSub}</span></p>
             <div class="cv__btns">
               <a class="btn" href="${esc(profile.cv)}" download>${t.cv}</a>
+              <button class="btn" type="button" data-print>${t.print}</button>
               ${contactLinks}
             </div>
           </div>
@@ -285,6 +287,22 @@ function badgeSVG(c, hex = true) {
   </svg>`;
 }
 
+// Estado de vigencia: usa `expires` (fecha) o `noExpiry`. Sin ninguno de los dos no se afirma nada.
+export function certStatus(c, now = new Date()) {
+  if (c.noExpiry) return { kind: 'valid', label: t.certNoExpiry };
+  if (!c.expires) return null;
+  const when = dateFmt(c.expires, { month: 'long', year: 'numeric' });
+  const days = (new Date(`${c.expires}T00:00:00Z`) - now) / 86400000;
+  if (days < 0) return { kind: 'expired', label: t.certExpired(when) };
+  if (days <= 90) return { kind: 'soon', label: t.certSoon(when) };
+  return { kind: 'valid', label: t.certValid(when) };
+}
+
+const statusChip = (c) => {
+  const st = certStatus(c);
+  return st ? `<span class="cert__status cert__status--${st.kind}">${esc(st.label)}</span>` : '';
+};
+
 function certDates(c) {
   if (!c.date) return '';
   const parts = [`${t.earned}: ${dateFmt(c.date, { day: 'numeric', month: 'long', year: 'numeric' })}`];
@@ -309,6 +327,7 @@ function renderCert(c) {
         <em>${esc(c.issuer)}</em>
         <strong>${esc(c.title)}</strong>
         ${c.date ? `<small>${esc(dateFmt(c.date, { month: 'short', year: 'numeric' }))}</small>` : ''}
+        ${statusChip(c)}
       </span>
     </button>
   </li>`;
@@ -331,7 +350,7 @@ export function setupCerts() {
     const dates = certDates(c);
     body.innerHTML = `
       <div class="lightbox__media"></div>
-      <p class="lightbox__cap"><em>${esc(c.issuer)}</em> <strong>${esc(c.title)}</strong>${dates ? `<span>${esc(dates)}</span>` : ''}</p>`;
+      <p class="lightbox__cap"><em>${esc(c.issuer)}</em> <strong>${esc(c.title)}</strong>${dates ? `<span>${esc(dates)}</span>` : ''}${statusChip(c)}</p>`;
     const media = body.querySelector('.lightbox__media');
     const fallback = () => {
       media.innerHTML = `<div class="lightbox__badge">${badgeSVG(c)}</div><p class="lightbox__pending">${t.pendingPhoto}</p>`;
@@ -446,6 +465,7 @@ export function setupContactForm() {
     if (!name) return say(t.errName, 'error');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return say(t.errEmail, 'error');
     if (message.length < 10) return say(t.errMessage, 'error');
+    if (navigator.onLine === false) return say(t.offline, 'error');
 
     button.disabled = true;
     say(t.sending);

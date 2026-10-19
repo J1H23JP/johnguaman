@@ -1,0 +1,19 @@
+{
+  "name": "Portafolio John Guaman",
+  "short_name": "John Guaman",
+  "description": "Portafolio 3D interactivo de John Guaman: agentes de IA y desarrollo de software.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#070b1f",
+  "theme_color": "#070b1f",
+  "categories": ["portfolio", "developer", "productivity"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

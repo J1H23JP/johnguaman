@@ -216,6 +216,7 @@ export const skills = [
 ];
 
 // Certificaciones. `image` es la foto del certificado (carpeta public/certs/) y `badge` la insignia recortada.
+// `expires` (fecha de vencimiento) o `noExpiry: true` activan la marca de vigencia. Las Fundamentals de Microsoft no vencen.
 // Si el archivo de `image` no existe todavia, la tarjeta muestra una insignia generada y se abre sin foto.
 // Las fechas salen de los certificados. Agrega aqui los que falten, con el mismo formato.
 export const certifications = [
@@ -226,14 +227,14 @@ export const certifications = [
     image: './certs/titulo-unach.jpg',
   },
   {
-    id: 'az-900', code: 'AZ-900', kind: 'cloud',
+    id: 'az-900', noExpiry: true, code: 'AZ-900', kind: 'cloud',
     issuer: 'Microsoft',
     title: 'Aspectos básicos de Azure',
     date: '2026-04-29',
     image: './certs/az-900.jpg', badge: './certs/az-900-badge.png',
   },
   {
-    id: 'ia-901', code: 'IA-901', kind: 'ai',
+    id: 'ia-901', noExpiry: true, code: 'IA-901', kind: 'ai',
     issuer: 'Microsoft',
     title: 'Aspectos básicos de la inteligencia artificial de Azure',
     date: '2026-09-07',
@@ -247,7 +248,7 @@ export const certifications = [
     image: './certs/gh-300.jpg', badge: './certs/gh-300-badge.png',
   },
   {
-    id: 'dp-900', code: 'DP-900', kind: 'cloud',
+    id: 'dp-900', noExpiry: true, code: 'DP-900', kind: 'cloud',
     issuer: 'Microsoft',
     title: 'Aspectos básicos de los datos de Azure',
     date: '2026-08-03',

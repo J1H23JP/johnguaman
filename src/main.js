@@ -10,6 +10,9 @@ import { journey, projects, skills } from './data/content.js';
 import { buildUI, buildDefectsHud, setPathStep, setProject, setSkill, setupContactForm, setupCerts, setupTools, toast, toggleHud } from './ui.js';
 import { t, applyDocumentLanguage } from './i18n.js';
 import { setupAgent } from './agent.js';
+import { setupPalette } from './palette.js';
+import { setupPrint } from './print.js';
+import { setupPwa } from './pwa.js';
 import { COLORS, createCrystal } from './scene/crystal.js';
 import { createStars } from './scene/stars.js';
 import { createBackdrop } from './scene/backdrop.js';
@@ -25,6 +28,9 @@ applyDocumentLanguage();
 buildUI();
 setupTools();
 setupAgent();
+setupPalette();
+setupPrint();
+setupPwa();
 setupContactForm();
 setupCerts();
 setProject(0);
@@ -315,6 +321,7 @@ function setSection(idx) {
   sectionNow = idx;
   railLinks.forEach((a, i) => (i === idx ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')));
   const ids = ['inicio', 'sobre-mi', 'proyectos', 'habilidades', 'certificaciones', 'trayectoria', 'contacto'];
+  window.dispatchEvent(new CustomEvent('section:change', { detail: ids[idx] }));
   menuLinks.forEach((a) =>
     a.dataset.nav === ids[idx] ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')
   );
