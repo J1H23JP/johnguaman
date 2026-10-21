@@ -112,6 +112,7 @@ export function buildUI() {
           <div class="hero__actions">
             <a class="btn btn--solid" href="#proyectos" data-nav="proyectos">${t.viewProjects}</a>
             <a class="btn" href="#contacto" data-nav="contacto">${t.contact}</a>
+            <button class="btn" type="button" data-recruiter>${t.recruiterBtn}</button>
           </div>
           <p class="hero__kbd" aria-hidden="true">${t.palKbdHint} <kbd>${/Mac|iPhone|iPad/.test(navigator.platform || '') ? '⌘' : 'Ctrl'}</kbd> <kbd>K</kbd></p>
         </div>

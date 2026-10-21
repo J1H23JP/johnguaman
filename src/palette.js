@@ -5,6 +5,9 @@ import { t } from './i18n.js';
 import { toast } from './ui.js';
 import { openAgent } from './agent.js';
 import { isStandalone, promptInstall } from './pwa.js';
+import { openRecruiter } from './recruiter.js';
+import { openLinkMaker } from './campaign.js';
+import { getQuality, setQuality } from './quality.js';
 
 const norm = (s) =>
   String(s)
@@ -51,6 +54,13 @@ function buildCommands() {
     keys: 'oferta vacante empleo trabajo compatibilidad job offer vacancy compare match fit',
     run: () => openAgent('job'),
   });
+  add({ group: 'actions', icon: 'cert', label: t.palRecruiter, keys: 'resumen reclutador recruiter summary rapido quick cv 30', run: () => openRecruiter() });
+  add({ group: 'actions', icon: 'link', label: t.palLink, keys: 'enlace link empresa company personalizado custom url compartir share', run: () => openLinkMaker() });
+  add(
+    getQuality() === 'low'
+      ? { group: 'actions', icon: 'theme', label: t.palQualityAuto, keys: 'calidad grafica automatica quality auto rendimiento performance', run: () => setQuality('auto') }
+      : { group: 'actions', icon: 'theme', label: t.palQualityLow, keys: 'ligero ligera lento lag rendimiento performance light low efectos effects bateria battery', run: () => setQuality('low') }
+  );
   add({ group: 'actions', icon: 'lang', label: t.palLang, keys: 'idioma lenguaje language english ingles espanol spanish', run: () => document.querySelector('#btn-lang')?.click() });
   add({ group: 'actions', icon: 'theme', label: t.palTheme, keys: 'tema claro oscuro modo dark light theme mode', run: () => document.querySelector('#btn-theme')?.click() });
   add({

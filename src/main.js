@@ -13,6 +13,10 @@ import { setupAgent } from './agent.js';
 import { setupPalette } from './palette.js';
 import { setupPrint } from './print.js';
 import { setupPwa } from './pwa.js';
+import { setupAnalytics } from './analytics.js';
+import { setupRecruiter } from './recruiter.js';
+import { setupCampaign, getCampaign } from './campaign.js';
+import { getQuality } from './quality.js';
 import { COLORS, createCrystal } from './scene/crystal.js';
 import { createStars } from './scene/stars.js';
 import { createBackdrop } from './scene/backdrop.js';
@@ -31,6 +35,9 @@ setupAgent();
 setupPalette();
 setupPrint();
 setupPwa();
+setupAnalytics();
+setupRecruiter();
+setupCampaign();
 setupContactForm();
 setupCerts();
 setProject(0);
@@ -62,7 +69,13 @@ if (!renderer) {
   throw new Error('Sin WebGL: se muestra la version de solo texto.');
 }
 
-let pixelRatio = Math.min(window.devicePixelRatio || 1, isTouch ? 1.5 : 2);
+// Equipos modestos (poca memoria, pocos nucleos o ahorro de datos): se empieza con menos resolucion.
+const weakDevice =
+  !!(navigator.connection && navigator.connection.saveData) ||
+  (navigator.deviceMemory && navigator.deviceMemory <= 4) ||
+  (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
+const pixelCap = Math.min(isTouch || weakDevice ? 1.5 : 2, weakDevice ? 1.5 : 2);
+let pixelRatio = Math.min(window.devicePixelRatio || 1, pixelCap);
 renderer.setPixelRatio(pixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight, false);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -138,6 +151,40 @@ const fxPass = new ShaderPass({
 });
 composer.addPass(fxPass);
 composer.addPass(new OutputPass());
+
+// ---------------------------------------------------------------- Calidad adaptable
+// Nivel 0: completo. 1: menos resolucion. 2: sin bloom y la mitad de estrellas. 3: resolucion minima.
+// Baja solo cuando el equipo va lento de forma sostenida; el "modo ligero" (paleta de comandos) salta directo al nivel 2.
+let tier = 0;
+let lastAvg = 0;
+let resumed = false;
+const bootAt = performance.now();
+document.addEventListener('visibilitychange', () => {
+  resumed = true;
+  acc = 0;
+  frames = 0;
+  slowFrames = 0;
+});
+let lowMode = getQuality() === 'low';
+const starTotal = stars.points.geometry.attributes.position.count;
+
+function applyTier() {
+  const lite = tier >= 2 || lowMode;
+  bloom.enabled = !lite;
+  stars.points.geometry.setDrawRange(0, lite ? Math.floor(starTotal * 0.5) : starTotal);
+  if (lowMode) pixelRatio = Math.min(pixelRatio, 1);
+  if (tier >= 3) pixelRatio = 0.75;
+  onResize();
+}
+
+window.addEventListener('quality:set', (e) => {
+  lowMode = e.detail === 'low';
+  if (!lowMode) {
+    tier = 0;
+    pixelRatio = Math.min(window.devicePixelRatio || 1, pixelCap);
+  }
+  applyTier();
+});
 
 // ---------------------------------------------------------------- Estado
 
@@ -363,21 +410,38 @@ let first = true;
 
 function frame() {
   const now = performance.now();
-  const dt = Math.min((now - lastTime) / 1000, 0.05);
+  const raw = (now - lastTime) / 1000; // tiempo real entre cuadros (dt abajo se recorta para las animaciones)
+  const dt = Math.min(raw, 0.05);
   lastTime = now;
   elapsed += dt;
   const t = elapsed;
   const y = window.scrollY;
 
-  // Calidad adaptable: si el equipo va lento, baja la resolucion.
-  acc += dt;
-  frames++;
+  // Calidad adaptable: se mide en ventanas de 2 s, se ignoran los primeros 3 s (compilacion de shaders)
+  // y solo se baja de nivel tras dos ventanas lentas seguidas.
+  if (resumed) {
+    // El primer cuadro tras volver a la pestana incluye todo el tiempo oculta: no cuenta.
+    resumed = false;
+  } else {
+    acc += Math.min(raw, 10);
+    frames++;
+  }
   if (acc > 2) {
     const avg = acc / frames;
-    if (avg > 0.03 && pixelRatio > 1) {
-      pixelRatio = Math.max(1, pixelRatio - 0.25);
-      onResize();
-    }
+    lastAvg = avg;
+    if (now - bootAt > 3000 && avg > 0.03) {
+      slowFrames++;
+      const severe = avg > 0.1; // menos de 10 cuadros por segundo: no se espera una segunda ventana
+      if ((severe || slowFrames >= 2) && tier < 3) {
+        slowFrames = 0;
+        if (severe) {
+          pixelRatio = Math.min(pixelRatio, 1);
+          tier = Math.max(tier + 1, 2);
+        } else if (pixelRatio > 1) pixelRatio = Math.max(1, pixelRatio - 0.25);
+        else tier = Math.min(3, tier + (tier === 0 ? 2 : 1));
+        applyTier();
+      }
+    } else slowFrames = 0;
     acc = 0;
     frames = 0;
   }
@@ -496,6 +560,9 @@ async function start() {
   scene.add(constellation.group);
   globe = createGlobe();
   scene.add(globe.group);
+  const camp = getCampaign();
+  if (camp && camp.skills.length) constellation.setFeatured(camp.skills);
+  if (lowMode) applyTier();
   buildDefectsHud(0, crystal.count);
   setSection(0);
   requestAnimationFrame(frame);
@@ -514,4 +581,4 @@ async function constellationReady() {
 start();
 
 // Util para depurar desde la consola del navegador.
-window.__portfolio = { director, crystal, goToSection, goToProject };
+window.__portfolio = { director, crystal, goToSection, goToProject, quality: () => ({ tier, lowMode, pixelRatio, bloom: bloom.enabled, frameMs: Math.round(lastAvg * 1000) }) };

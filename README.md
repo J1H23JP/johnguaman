@@ -16,8 +16,11 @@ El portafolio de John Guaman, graduado en Ingeniería en Tecnologías de la Info
   - **Comparar con una oferta de trabajo.** Se pega la descripción de un puesto; el agente busca en ella tecnologías (de una lista de más de 100 comunes), años de experiencia, nivel de inglés y formación, y muestra qué aparece en el CV de John (con los años de cada habilidad), qué no aparece (y qué hay cercano) y qué conviene confirmar con él. Lo que no aparece se marca como "no está en su CV", nunca como "no sabe". Puede abrir el formulario con el resultado ya escrito.
   - **Voz.** Botón de micrófono para dictar la pregunta y botón "Escuchar" para leer cada respuesta en voz alta. La lectura es local (`speechSynthesis`). El dictado usa el reconocimiento de voz del navegador: en Chrome el audio lo procesa Google, y el chat lo avisa la primera vez. Si el navegador no lo soporta (por ejemplo Firefox), el botón no aparece.
   - **Chat.** Botón para copiar cada respuesta, preguntas sugeridas según la sección donde está la persona, y un historial que se conserva al recargar o cambiar de idioma mientras la pestaña siga abierta (`sessionStorage`; las respuestas se vuelven a calcular en el idioma activo). El botón de reinicio lo borra.
+  - **Preguntas sin respuesta.** Cuando el agente no sabe contestar, además de pasarla al formulario ofrece "Enviar solo la pregunta a John": al hacer clic (no se envía nada antes) llega a tu correo, por el mismo servicio del formulario, solo el texto de la pregunta, sin nombre ni correo. Máximo cinco por visita y sin repetir la misma. Así sabes qué agregar a la base de conocimiento.
   - Está en `src/agent.js`; los textos del agente están al inicio de ese archivo, en español e inglés. La lista de tecnologías de la comparación (`TECH`) está en el mismo archivo: agrega ahí las que necesites, con su patrón de búsqueda.
 - **Paleta de comandos (Ctrl + K, o Cmd + K en Mac).** Escribiendo unas letras se salta a una sección, un proyecto o un certificado, o se ejecuta una acción: abrir el agente, comparar con una oferta, cambiar idioma o tema, descargar el CV, imprimir, escribir a John, instalar la app. Código en `src/palette.js`.
+- **Resumen rápido (30 segundos).** Botón en la portada, en la paleta y en el aviso de los enlaces por empresa: una ventana con rol, experiencia, habilidades con sus años, certificaciones con su vigencia y botones para descargar el CV, escribirte o comparar con una oferta. Se arma con los mismos datos del portafolio. Código en `src/recruiter.js`. Si agregas `availability: '...'` en `profile` (`content.es.js`) se muestra una línea de disponibilidad; no hay ninguna por defecto porque no se inventa.
+- **Enlaces por empresa.** `https://tu-sitio/?para=Acme&stack=Azure,Python&resumen=1` muestra un saludo para esa empresa, resalta esas habilidades (en la constelación y en el resumen) y, con `resumen=1`, abre el resumen rápido. Solo se resaltan habilidades que ya existen en el portafolio, y el nombre se limpia y se escribe como texto: un enlace manipulado no puede inyectar nada. Para no armar la dirección a mano, usa la paleta (Ctrl + K) y busca "Crear enlace para una empresa". Código en `src/campaign.js`.
 - **Idioma y tema.** Botones en la barra superior: español o inglés, y tema oscuro o claro. Ambos se recuerdan en el navegador. El tema claro invierte el lienzo 3D con un filtro CSS; el cambio de idioma recarga la página para reconstruir la escena con los textos nuevos.
 - **Trayectoria.** Línea de tiempo con la experiencia y la formación. El scroll avanza paso a paso (también se puede hacer clic en cada paso) mientras la cámara se acerca a Ecuador en el globo.
 - **Contacto.** Un globo terráqueo de puntos con paquetes de datos que viajan desde distintas ciudades hasta Quito. Incluye un formulario que envía el mensaje al correo del autor (al enviarlo, un paquete cruza la pantalla hasta Quito) y un apartado para descargar el CV en PDF.
@@ -81,6 +84,11 @@ src/
   palette.js           Paleta de comandos (Ctrl + K)
   print.js             Documento limpio para imprimir o guardar como PDF
   pwa.js               Registro del service worker, instalación y aviso de conexión
+  recruiter.js         Resumen rápido en una ventana
+  campaign.js          Enlaces por empresa y su creador
+  analytics.js         Estadísticas con GoatCounter (apagadas hasta poner el código)
+  quality.js           Modo ligero de la escena 3D
+  config.js            Ajustes del sitio que no son contenido
   i18n.js              Idioma, tema y textos de la interfaz
   style.css            Sistema visual y diseño responsive
   data/content.js      Contenido editable
@@ -135,12 +143,34 @@ El sitio es una PWA: tiene `public/manifest.webmanifest`, íconos y un service w
 
 Esto ayuda a que los buscadores entiendan la página, pero no garantiza posición. Para acelerarlo, da de alta el sitio en [Google Search Console](https://search.google.com/search-console) y envía el `sitemap.xml`. Ten en cuenta que `robots.txt` solo se respeta en la raíz del dominio, por eso en una página de proyecto de GitHub Pages no se genera.
 
+## Estadísticas de uso (sin cookies)
+
+El sitio puede contar visitas y qué se usa, con [GoatCounter](https://www.goatcounter.com): no usa cookies ni identifica personas, y el servicio gratuito es para uso público razonable (un portafolio personal cabe). **Mientras no pongas tu código, no se carga nada y no se mide a nadie.**
+
+1. Crea una cuenta gratuita en goatcounter.com y elige un código (por ejemplo `johnguaman`; tu panel será `https://johnguaman.goatcounter.com`).
+2. En GitHub: Settings > Secrets and variables > Actions > pestaña Variables > New repository variable. Nombre `GOATCOUNTER_CODE`, valor tu código. El siguiente despliegue ya mide. (Alternativa: poner el código en `src/config.js`.)
+3. **Dónde lo ves:** entras a tu panel de GoatCounter con tu usuario. Ahí aparecen visitas por día, países, navegadores, tamaños de pantalla y de dónde llegaron, y la lista de **eventos**:
+
+| Evento | Qué significa |
+| --- | --- |
+| `seccion/<nombre>` | Alguien llegó a esa sección (una vez por visita) |
+| `agente/abrir`, `agente/oferta` | Abrieron el agente, y compararon con una oferta (solo el conteo, nunca el texto) |
+| `agente/sin-respuesta`, `agente/pregunta-enviada` | El agente no supo contestar, y la persona te envió la pregunta |
+| `resumen/abrir` | Abrieron el resumen rápido |
+| `cv/descargar`, `imprimir` | Descargaron o imprimieron el CV |
+| `contacto/enviado` | Enviaron un mensaje |
+| `enlace/<empresa>` | Entraron con un enlace personalizado: te dice qué empresa abrió el suyo |
+
+Detalles de privacidad: no se mide en desarrollo, ni a quien tenga activado "No rastrear" o Global Privacy Control, y nunca se envía lo que alguien escribe. Código en `src/analytics.js`. Si usas esto con visitantes de la Unión Europea u otras regiones con reglas propias, conviene mencionarlo en una nota de privacidad.
+
 ## Rendimiento y accesibilidad
 
-- Resolución adaptable: si el equipo va lento, baja la densidad de píxeles automáticamente.
+- Calidad gráfica adaptable: se mide el tiempo real entre cuadros. Si el equipo va lento de forma sostenida baja la resolución, luego apaga el brillo (bloom) y reduce las estrellas a la mitad, y por último baja a la resolución mínima. Equipos con poca memoria, pocos núcleos o ahorro de datos empiezan con menos resolución. Quien quiera, puede activar el **modo ligero** desde la paleta (Ctrl + K, "Modo ligero"), y se recuerda en el navegador.
 - Los objetos lejanos de la cámara no se dibujan.
 - Se respeta `prefers-reduced-motion`: sin giro automático, sin aberración y con cámara directa.
-- Foco visible con teclado, enlace para saltar al contenido y navegación por flechas en los proyectos.
+- Foco visible con teclado, enlace para saltar al contenido y navegación por flechas en los proyectos. Los diálogos (resumen, paleta, creador de enlaces) se cierran con Esc y devuelven el foco a donde estaba.
+- Auditoría con axe-core (reglas WCAG 2.2 AA y buenas prácticas) en tema claro y oscuro, español e inglés, escritorio y celular, con el agente, la paleta y los diálogos abiertos: sin violaciones. Los puntos de navegación lateral tienen área de toque de 24 px. Los colores de acento del tema claro se oscurecieron para llegar a contraste 4.5:1. El contraste del texto sobre el 3D se midió con píxeles reales, porque una herramienta de reglas no puede calcularlo.
+- Lo que no se pudo probar: lectores de pantalla reales (NVDA, VoiceOver, TalkBack). Conviene una pasada manual con uno de ellos.
 - Sin WebGL, la página muestra el contenido como texto normal.
 
 ## Créditos de datos

@@ -203,6 +203,7 @@ export function createConstellation(skills) {
 
   const camPos = new THREE.Vector3();
   const tmp = new THREE.Vector3();
+  let featured = new Set();
   let rotY = 0;
   let rotX = 0;
 
@@ -212,6 +213,10 @@ export function createConstellation(skills) {
     pick(raycaster) {
       const hit = raycaster.intersectObjects(hitMeshes, false)[0];
       return hit ? hit.object.userData.index : -1;
+    },
+    // Habilidades pedidas en un enlace personalizado: brillan mas y el resto se atenua un poco.
+    setFeatured(names) {
+      featured = new Set(skills.map((s, i) => (names.includes(s.name) ? i : -1)).filter((i) => i >= 0));
     },
     update(t, dt, pointer, hoverIndex, camera, reduced) {
       const spin = reduced ? 0 : 1;
@@ -245,7 +250,9 @@ export function createConstellation(skills) {
 
       nodes.forEach((nd, i) => {
         nd.hover += ((i === hoverIndex ? 1 : 0) - nd.hover) * k;
-        nd.dim += ((hoverIndex >= 0 && i !== hoverIndex ? 1 : 0) - nd.dim) * k;
+        const feat = featured.size && featured.has(i) ? 1 : 0;
+        const dimTarget = hoverIndex >= 0 ? (i !== hoverIndex ? 1 : 0) : featured.size && !feat ? 0.45 : 0;
+        nd.dim += (dimTarget - nd.dim) * k;
         const linked = hoverIndex >= 0 && links[hoverIndex].includes(i);
         const fade = 1 - nd.dim * (linked ? 0.2 : 0.6);
         nd.gem.material.opacity = fade;
@@ -258,10 +265,10 @@ export function createConstellation(skills) {
           o.sat.scale.setScalar(1 + nd.hover * 0.8);
         });
         const pulse = 1 + (reduced ? 0 : Math.sin(t * 1.6 + nd.phase) * 0.06);
-        nd.gem.scale.setScalar((1 + nd.hover * 0.9) * pulse);
+        nd.gem.scale.setScalar((1 + nd.hover * 0.9 + feat * 0.35) * pulse);
         nd.gem.rotation.y = t * 0.6 + nd.phase;
         nd.gem.rotation.x = t * 0.35;
-        nd.halo.scale.setScalar(2.2 + nd.hover * 2.4);
+        nd.halo.scale.setScalar(2.2 + nd.hover * 2.4 + feat * 1.6 * (reduced ? 1 : 0.85 + Math.sin(t * 2 + nd.phase) * 0.15));
 
         // Las etiquetas del lado trasero se atenuan.
         nd.holder.getWorldPosition(tmp);

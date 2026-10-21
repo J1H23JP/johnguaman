@@ -6,6 +6,7 @@
 import { profile, about, journey, projects, skills, certifications, sections } from './data/content.js';
 import { t, lang } from './i18n.js';
 import { toast, certStatus } from './ui.js';
+import { track } from './analytics.js';
 import { ttsSupported, sttSupported, speak, stopSpeaking, createDictation } from './voice.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -103,6 +104,13 @@ const STR = {
     thanks: 'De nada. Si quieres saber algo más, aquí sigo.',
     empty: 'Escribe una pregunta sobre John.',
     handoffBtn: 'Escribirle a John con mi pregunta',
+    reportBtn: 'Enviar solo la pregunta a John',
+    reportNote: 'Se envía únicamente el texto de la pregunta, sin nombre ni correo, para que John la responda y mejore el agente. No es obligatorio.',
+    reportSending: 'Enviando...',
+    reportSent: 'Pregunta enviada. Gracias.',
+    reportFail: 'No se pudo enviar. Prueba con el formulario de contacto.',
+    reportDone: 'Ya la enviaste en esta visita.',
+    reportLimit: 'Ya enviaste varias preguntas en esta visita.',
     handoffToast: 'Pregunta añadida al formulario',
     prefill: (q) => `Hola John, le hice esta pregunta a tu agente y no pudo responderla:\n\n"${q}"\n\n`,
     openLink: 'Abrir',
@@ -235,6 +243,13 @@ const STR = {
     thanks: 'You are welcome. If you want to know anything else, I am here.',
     empty: 'Type a question about John.',
     handoffBtn: 'Write to John with my question',
+    reportBtn: 'Send only the question to John',
+    reportNote: 'Only the text of the question is sent, with no name or email, so John can answer it and improve the agent. Optional.',
+    reportSending: 'Sending...',
+    reportSent: 'Question sent. Thank you.',
+    reportFail: 'Could not send it. Try the contact form instead.',
+    reportDone: 'You already sent it during this visit.',
+    reportLimit: 'You already sent several questions during this visit.',
     handoffToast: 'Question added to the form',
     prefill: (q) => `Hi John, I asked your agent this question and it could not answer it:\n\n"${q}"\n\n`,
     openLink: 'Open',
@@ -593,14 +608,14 @@ function respond(question) {
     .filter((r) => r.score > 0)
     .sort((a, b) => b.score * (0.5 + 0.5 * b.coverage) - a.score * (0.5 + 0.5 * a.coverage));
 
-  if (!ranked.length) return { kind: 'handoff', text: S.noInfo, question, confidence: 0, trace: { ...trace, decision: 'handoff' } };
+  if (!ranked.length) return { kind: 'handoff', unanswered: true, text: S.noInfo, question, confidence: 0, trace: { ...trace, decision: 'handoff' } };
 
   const top = ranked[0];
   const coverage = top.coverage;
   trace.best = `${top.chunk.title} (${top.chunk.sectionLabel})`;
   trace.coverage = coverage;
 
-  if (coverage < 0.35) return { kind: 'handoff', text: S.noInfo, question, confidence: coverage, trace: { ...trace, decision: 'handoff' } };
+  if (coverage < 0.35) return { kind: 'handoff', unanswered: true, text: S.noInfo, question, confidence: coverage, trace: { ...trace, decision: 'handoff' } };
 
   // Fragmentos a mostrar: el mejor y los que se le acercan, maximo tres.
   let picked;
@@ -980,6 +995,7 @@ function renderResponse(r) {
     }
     return `<p>${esc(r.text)}</p>
       <button class="btn btn--solid agent__handoff" type="button" data-handoff="${esc(r.question)}">${S.handoffBtn}</button>
+      ${r.unanswered ? `<button class="btn agent__handoff" type="button" data-report="${esc(r.question)}">${S.reportBtn}</button><p class="job__note">${S.reportNote}</p>` : ''}
       <div class="msg__meta">${renderConfidence(r.confidence)}</div>
       ${renderTrace(r.trace)}`;
   }
@@ -1077,6 +1093,10 @@ function turn(entry, { instant = false, persist = true } = {}) {
     saveHist();
   }
   const result = entry.t === 'job' ? analyzeOffer(entry.v) : respond(entry.v);
+  if (persist) {
+    if (result.kind === 'job') track('agente/oferta', 'Oferta analizada');
+    if (result.unanswered) track('agente/sin-respuesta', 'Pregunta sin respuesta');
+  }
   const wait = addMessage('bot', `<p class="msg__wait"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span>${S.steps[0]}</span></p>`);
   const label = wait.querySelector('.msg__wait span:last-child');
   const finish = () => {
@@ -1148,6 +1168,7 @@ function resetConversation() {
 // ---- Apertura y cierre
 
 function open(nextMode) {
+  track('agente/abrir', 'Agente abierto', { unique: true });
   lastFocus = document.activeElement;
   panel.hidden = false;
   requestAnimationFrame(() => panel.classList.add('is-open'));
@@ -1186,6 +1207,57 @@ function goContact(prefillText) {
     field.focus({ preventScroll: true });
     toast(S.handoffToast);
   }, 1100);
+}
+
+// Envia SOLO el texto de la pregunta (sin nombre ni correo) a John, cuando la persona lo pide con un clic.
+const REPORT_KEY = 'agent:reported';
+async function reportQuestion(btn) {
+  const q = String(btn.dataset.report || '').slice(0, 300);
+  if (!q) return;
+  const key = norm(q);
+  let sent = [];
+  try {
+    sent = JSON.parse(sessionStorage.getItem(REPORT_KEY) || '[]');
+  } catch {
+    /* sin almacenamiento */
+  }
+  if (sent.includes(key)) {
+    btn.disabled = true;
+    btn.textContent = S.reportDone;
+    return;
+  }
+  if (sent.length >= 5) return toast(S.reportLimit);
+  if (navigator.onLine === false) return toast(t.offline);
+  btn.disabled = true;
+  btn.textContent = S.reportSending;
+  try {
+    const res = await fetch(`https://formsubmit.co/ajax/${profile.formTo}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        _subject: lang === 'en' ? '[Portfolio] Question the agent could not answer' : '[Portafolio] Pregunta que el agente no supo responder',
+        message: q,
+        idioma: lang,
+        origen: 'agente-sin-respuesta',
+        _template: 'table',
+        _captcha: 'false',
+      }),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || String(json.success) === 'false') throw new Error(json.message || 'error');
+    try {
+      sessionStorage.setItem(REPORT_KEY, JSON.stringify([...sent, key]));
+    } catch {
+      /* igual */
+    }
+    btn.textContent = S.reportSent;
+    track('agente/pregunta-enviada', 'Pregunta enviada a John');
+  } catch (err) {
+    console.warn('Pregunta sin respuesta:', err);
+    btn.disabled = false;
+    btn.textContent = S.reportBtn;
+    toast(S.reportFail);
+  }
 }
 
 function handoff(question) {
@@ -1239,7 +1311,7 @@ function setupDictation() {
 }
 
 function launcherMarkup() {
-  return `<button class="tool tool--agent" id="btn-agent" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="agent" title="${S.heroBtn}">
+  return `<button class="tool tool--agent" id="btn-agent" type="button" aria-haspopup="dialog" aria-expanded="false" title="${S.heroBtn}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M5 9a7 7 0 0 1 14 0v4a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z"/><circle cx="9.5" cy="11" r="1"/><circle cx="14.5" cy="11" r="1"/><path d="M9 21h6"/></svg>
     <span>${S.launcher}</span>
   </button>`;
@@ -1252,7 +1324,7 @@ export function setupAgent() {
   const hero = document.querySelector('.hero__actions');
   if (hero) hero.insertAdjacentHTML('beforeend', `<button class="btn btn--agent" type="button" data-agent-open>${S.heroBtn}</button>`);
 
-  panel = document.createElement('aside');
+  panel = document.createElement('section');
   panel.id = 'agent';
   panel.className = 'agent';
   panel.hidden = true;
@@ -1260,7 +1332,7 @@ export function setupAgent() {
   panel.setAttribute('role', 'dialog');
   panel.setAttribute('aria-labelledby', 'agent-title');
   panel.innerHTML = `
-    <header class="agent__head">
+    <div class="agent__head">
       <div>
         <strong id="agent-title">${S.title}</strong>
         <p>${S.sub}</p>
@@ -1269,7 +1341,7 @@ export function setupAgent() {
         <button class="agent__icon" type="button" data-clear title="${S.clear}" aria-label="${S.clear}">${ICON.clear}</button>
         <button class="agent__close" type="button" aria-label="${S.close}">&times;</button>
       </div>
-    </header>
+    </div>
     <div class="agent__log" id="agent-log" role="log" aria-live="polite"></div>
     <div class="agent__chips" id="agent-chips"></div>
     <button class="agent__back" type="button" hidden>${ICON.back}<span>${S.jobBack}</span></button>
@@ -1342,6 +1414,8 @@ export function setupAgent() {
     if (chip) return ask(chip.dataset.ask);
     const h = e.target.closest('[data-handoff]');
     if (h) return handoff(h.dataset.handoff);
+    const rp = e.target.closest('[data-report]');
+    if (rp) return reportQuestion(rp);
     const hj = e.target.closest('[data-handoff-job]');
     if (hj) return handoffJob(hj.dataset.handoffJob);
     const cp = e.target.closest('[data-copy]');
